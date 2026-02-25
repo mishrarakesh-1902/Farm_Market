@@ -1,0 +1,958 @@
+
+
+# views.py (arranged in logical order)
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.decorators import login_required 
+from django.views.decorators.http import require_POST, require_http_methods
+from django.contrib.auth.models import User
+from django.contrib import messages
+from .models import UserProfile
+from django.conf import settings
+from django import forms
+from django.db.models import Q
+import razorpay 
+import datetime
+# at top of views.py
+import threading
+from .utils import send_welcome_email
+from .image_utils import compress_image, compress_images_batch
+
+import os
+import pickle
+import pandas as pd
+from decimal import Decimal
+from django.template.loader import render_to_string
+from django.core.mail import EmailMultiAlternatives
+from django.urls import reverse
+
+from django.http import JsonResponse, HttpResponseBadRequest
+from django.views.decorators.csrf import csrf_exempt
+import json
+from .models import (
+    Product, ProductImage, Review, CartItem, Order,
+    UserProfile, FarmerProfile, BuyerProfile, Crop, CropPrice,
+    QualityInput, QualityInputImage, QualityInputReview, QualityInputCartItem, QualityInputOrder
+)
+from .forms import (
+    OrderForm, ProductSearchForm, UserRegistrationForm,
+    FarmerProfileForm, BuyerProfileForm, ContactForm,
+    CropInputForm, YieldPredictionForm, ProductForm,
+    QualityInputForm, QualityInputOrderForm, QualityInputSearchForm, QualityInputReviewForm
+)
+
+# ========== AUTHENTICATION ==========
+def home(request):
+    return render(request, 'marketplace/index.html')
+
+class UserRegistrationForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput)
+    confirm_password = forms.CharField(widget=forms.PasswordInput)
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get("password")
+        confirm_password = cleaned_data.get("confirm_password")
+        if password and confirm_password and password != confirm_password:
+            raise forms.ValidationError("Passwords do not match.")
+        return cleaned_data
+
+
+def send_welcome_email(user, request=None):
+    """
+    Sends HTML + plain text welcome email to new user.
+    """
+    if not user.email:
+        return False
+
+    context = {
+        "username": user.username,
+        "login_url": request.build_absolute_uri(reverse("login")) if request else reverse("login"),
+        "year": datetime.datetime.now().year,
+    }
+
+    subject = "Welcome to Farm Market — Account Created"
+    from_email = settings.DEFAULT_FROM_EMAIL
+    to = [user.email]
+
+    html_content = render_to_string("emails/welcome_email.html", context)
+    text_content = render_to_string("emails/welcome_email.txt", context)
+
+    msg = EmailMultiAlternatives(subject, text_content, from_email, to)
+    msg.attach_alternative(html_content, "text/html")
+
+    try:
+        msg.send()
+        return True
+    except Exception as e:
+        print("Email send failed:", e)
+        return False
+
+
+
+def register_view(request):
+    if request.method == 'POST':
+        form = UserRegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            raw_password = form.cleaned_data['password']
+            role = request.POST.get('role')
+            if not role:
+                messages.error(request, "Please select a role (Farmer or Buyer).")
+                return redirect('register')
+            user.set_password(raw_password)
+            user.save()
+            UserProfile.objects.create(user=user, role=role)
+           
+            # ✅ Send welcome email in background
+            threading.Thread(
+                target=send_welcome_email, args=(user, request), daemon=True
+            ).start()
+
+            messages.success(request, "Account created successfully. Please login.")
+            return redirect('login')
+    else:
+        form = UserRegistrationForm()
+    return render(request, 'marketplace/register.html', {'user_form': form})
+
+# def login_view(request):
+#     if request.method == 'POST':
+#         username = request.POST.get('username')
+#         password = request.POST.get('password')
+#         user = authenticate(request, username=username, password=password)
+#         if user:
+#             login(request, user)
+#             role = UserProfile.objects.get(user=user).role
+#             return redirect('farmer_dashboard' if role == 'farmer' else 'buyer_dashboard')
+#         else:
+#             messages.error(request, "Invalid credentials")
+#     return render(request, 'marketplace/login.html', {'form': ''})
+
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+
+        if user:
+            login(request, user)
+            try:
+                role = UserProfile.objects.get(user=user).role
+                if role == 'farmer':
+                    messages.success(request, "Welcome to Farmer Dashboard")
+                    return redirect('farmer_dashboard')
+                elif role == 'buyer':
+                    messages.success(request, "Welcome to Buyer Dashboard")
+                    return redirect('buyer_dashboard')
+                else:
+                    messages.error(request, "Unknown role")
+            except UserProfile.DoesNotExist:
+                messages.error(request, "User profile not found")
+        else:
+            messages.error(request, "Invalid credentials")
+
+    return render(request, 'marketplace/login.html', {'form': ''})
+
+
+@login_required
+def logout_view(request):
+    logout(request)
+    return redirect('home')
+
+# ========== HOMEPAGE & DASHBOARDS ==========
+
+
+
+@login_required
+def farmer_dashboard(request):
+    try:
+        user_profile = UserProfile.objects.get(user=request.user)
+        if user_profile.role != 'farmer':
+            messages.error(request, "You are not authorized to access the farmer dashboard.")
+            return redirect('home')
+    except UserProfile.DoesNotExist:
+        messages.error(request, "User profile not found. Please complete your profile setup.")
+        return redirect('home')
+    return render(request, 'marketplace/farmer_dashboard.html', {'is_farmer': True})
+
+
+@login_required
+def buyer_dashboard(request):
+    try:
+        user_profile = UserProfile.objects.get(user=request.user)
+        if user_profile.role != 'buyer':
+            messages.error(request, "You are not authorized to access the buyer dashboard.")
+            return redirect('home')
+    except UserProfile.DoesNotExist:
+        messages.error(request, "User profile not found. Please complete your profile setup.")
+        return redirect('home')
+    return render(request, 'marketplace/buyer_dashboard.html', {'is_farmer': False})
+
+# ========== PRODUCT MANAGEMENT ==========
+
+@login_required
+def upload_product(request):
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.seller = request.user
+            product.save()
+            
+            # Get and compress images before saving
+            images = request.FILES.getlist('images')
+            compressed_images = compress_images_batch(images)
+            
+            for img in compressed_images:
+                ProductImage.objects.create(product=product, image=img)
+            
+            messages.success(request, "Product uploaded successfully with optimized images!")
+            return redirect('farmer_dashboard')
+    else:
+        form = ProductForm()
+    return render(request, 'direct-selling/upload_product.html', {'form': form})
+
+@login_required
+def my_products(request):
+    products = Product.objects.filter(seller=request.user)
+    return render(request, 'direct-selling/my_products.html', {'products': products})
+
+@login_required
+def edit_product(request, product_id):
+    product = get_object_or_404(Product, id=product_id, seller=request.user)
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES, instance=product)
+        if form.is_valid():
+            form.save()
+            return redirect('my_products')
+    else:
+        form = ProductForm(instance=product)
+    return render(request, 'direct-selling/edit_product.html', {'form': form, 'product': product})
+
+def product_list(request):
+    form = ProductSearchForm(request.GET or None)
+    products = Product.objects.select_related('seller').all()
+    if form.is_valid() and form.cleaned_data['q']:
+        query = form.cleaned_data['q']
+        products = products.filter(
+            Q(name__icontains=query) |
+            Q(seller__username__icontains=query)
+        )
+    return render(request, 'direct-selling/product_list.html', {'products': products, 'form': form})
+
+
+@login_required
+def delete_product(request, product_id):
+    product = get_object_or_404(Product, id=product_id, seller=request.user)
+    product.delete()
+    return redirect('my_products')  # make sure 'my_products' is your name in urls.py
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def product_detail(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    images = product.images.all()
+    reviews = product.reviews.order_by('-created_at')
+    if request.method == 'POST':
+        rating = request.POST.get('rating')
+        comment = request.POST.get('comment')
+        if rating and comment:
+            Review.objects.create(product=product, user=request.user, rating=rating, comment=comment)
+            messages.success(request, 'Review submitted successfully.')
+            return redirect('product_detail', pk=pk)
+    return render(request, 'direct-selling/product_detail.html', {'product': product, 'images': images, 'reviews': reviews})
+
+@login_required
+def delete_review(request, review_id):
+    review = get_object_or_404(Review, id=review_id)
+    if review.user == request.user:
+        review.delete()
+        messages.success(request, 'Review deleted successfully.')
+    else:
+        messages.error(request, 'You can only delete your own review.')
+    return redirect('product_detail', pk=review.product.pk)
+
+# ========== CART AND ORDER ==========
+
+@login_required
+def add_to_cart(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    cart_item, _ = CartItem.objects.get_or_create(user=request.user, product=product)
+    cart_item.unit = request.POST.get("unit", product.unit)
+    cart_item.quantity = cart_item.quantity or 1
+    cart_item.save()
+    return redirect(request.GET.get('next') or 'product_list')
+
+@login_required
+def cart(request):
+    cart_items = CartItem.objects.filter(user=request.user)
+    for item in cart_items:
+        item.item_total_price = (item.product.price_per_unit or Decimal('0.00')) * (item.quantity or 0)
+    total_price = sum(item.item_total_price for item in cart_items)
+    amount_in_paise = int(total_price * Decimal('100'))
+
+    form = OrderForm()
+    context = {
+        'cart_items': cart_items,
+        'total_price': total_price,
+        'form': form,
+        'RAZORPAY_KEY_ID': getattr(settings, 'RAZORPAY_KEY_ID', ''),
+        'amount_in_paise': amount_in_paise
+    }
+    return render(request, 'direct-selling/cart.html', context)
+    # return render(request, 'direct-selling/cart.html', {'cart_items': cart_items, 'total_price': total_price, 'form': OrderForm()})
+
+@login_required
+@require_POST
+def update_cart(request):
+    for item in CartItem.objects.filter(user=request.user):
+        try:
+            qty = int(request.POST.get(f'quantity_{item.id}', '').strip() or 1)
+            item.quantity = qty
+            item.unit = request.POST.get(f'unit_{item.id}', '').strip() or item.unit
+            item.save()
+        except (ValueError, TypeError):
+            continue
+    messages.success(request, "Cart updated successfully.")
+    return redirect('cart')
+
+@login_required
+@csrf_exempt
+def create_razorpay_order(request):
+    """
+    AJAX endpoint to create a Razorpay order. Expects JSON: {"amount": <amount_in_paise>}
+    Returns: order JSON from Razorpay.
+    """
+    if request.method != "POST":
+        return HttpResponseBadRequest("Only POST allowed")
+
+    try:
+        data = json.loads(request.body.decode('utf-8') or '{}')
+        amount = int(data.get('amount', 0))
+    except Exception:
+        return HttpResponseBadRequest("Invalid request data")
+
+    if amount <= 0:
+        return HttpResponseBadRequest("Invalid amount")
+
+    client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+    try:
+        razorpay_order = client.order.create({
+            'amount': amount,
+            'currency': 'INR',
+            'payment_capture': 1
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+    return JsonResponse(razorpay_order)
+
+
+
+
+# @login_required
+# @require_POST
+# def place_order(request):
+#     cart_items = CartItem.objects.filter(user=request.user)
+#     if not cart_items.exists():
+#         messages.error(request, "Your cart is empty.")
+#         return redirect('cart')
+#     form = OrderForm(request.POST)
+#     if form.is_valid():
+#         for item in cart_items:
+#             Order.objects.create(
+#                 buyer=request.user,
+#                 product=item.product,
+#                 quantity=item.quantity,
+#                 total_price=item.product.price_per_unit * item.quantity,
+#                 **form.cleaned_data
+#             )
+#         cart_items.delete()
+#         messages.success(request, "✅ Your order has been placed successfully.")
+#         return redirect('order_success')
+#     messages.error(request, "❌ Please correct the errors in the shipping form.")
+#     return render(request, 'direct-selling/cart.html', {'cart_items': cart_items, 'total_price': sum(item.item_total_price for item in cart_items), 'form': form})
+
+@login_required
+@require_POST
+def place_order(request):
+    """
+    Handles both COD and Online payments.
+    - For COD: create Order entries and clear cart.
+    - For Online: verify Razorpay signature, save payment ids in Order, mark paid, clear cart.
+    """
+    cart_items = CartItem.objects.filter(user=request.user)
+    if not cart_items.exists():
+        messages.error(request, "Your cart is empty.")
+        return redirect('cart')
+
+    form = OrderForm(request.POST)
+    if not form.is_valid():
+        messages.error(request, "Please correct the errors in the form.")
+        # re-render cart with form errors
+        # compute total again
+        total_price = sum((ci.product.price_per_unit or Decimal('0.00')) * ci.quantity for ci in cart_items)
+        return render(request, 'direct-selling/cart.html', {
+            'cart_items': cart_items,
+            'total_price': total_price,
+            'form': form,
+            'RAZORPAY_KEY_ID': getattr(settings, 'RAZORPAY_KEY_ID', '')
+        })
+
+    payment_method = form.cleaned_data['payment_method']
+    total_price = sum((ci.product.price_per_unit or Decimal('0.00')) * ci.quantity for ci in cart_items)
+
+    if payment_method == 'cod':
+        # create an Order per item (you can change to aggregated order if you prefer)
+        for item in cart_items:
+            Order.objects.create(
+                buyer=request.user,
+                product=item.product,
+                quantity=item.quantity,
+                address=form.cleaned_data['address'],
+                full_name=form.cleaned_data['full_name'],
+                email=form.cleaned_data['email'],
+                phone=form.cleaned_data['phone'],
+                payment_method='cod',
+                total_price=item.product.price_per_unit * item.quantity,
+                status='Pending',
+                payment_status='Pending'
+            )
+        cart_items.delete()
+        messages.success(request, "✅ Order placed successfully (Cash on Delivery).")
+        return redirect('my_orders')
+
+    elif payment_method == 'online':
+        # verify Razorpay signature posted by client after checkout
+        razorpay_payment_id = request.POST.get('razorpay_payment_id')
+        razorpay_order_id = request.POST.get('razorpay_order_id')
+        razorpay_signature = request.POST.get('razorpay_signature')
+
+        if not (razorpay_payment_id and razorpay_order_id and razorpay_signature):
+            messages.error(request, "Missing payment details. Please try again.")
+            return redirect('cart')
+
+        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+        params_dict = {
+            'razorpay_order_id': razorpay_order_id,
+            'razorpay_payment_id': razorpay_payment_id,
+            'razorpay_signature': razorpay_signature
+        }
+
+        try:
+            client.utility.verify_payment_signature(params_dict)
+        except razorpay.errors.SignatureVerificationError:
+            messages.error(request, "Payment verification failed. Please contact support.")
+            return redirect('cart')
+        except Exception:
+            messages.error(request, "Payment verification failed. Please contact support.")
+            return redirect('cart')
+
+        # signature verified — save Orders with payment info
+        for item in cart_items:
+            Order.objects.create(
+                buyer=request.user,
+                product=item.product,
+                quantity=item.quantity,
+                address=form.cleaned_data['address'],
+                full_name=form.cleaned_data['full_name'],
+                email=form.cleaned_data['email'],
+                phone=form.cleaned_data['phone'],
+                payment_method='online',
+                total_price=item.product.price_per_unit * item.quantity,
+                status='Pending',
+                payment_status='Paid',
+                razorpay_order_id=razorpay_order_id,
+                razorpay_payment_id=razorpay_payment_id,
+                razorpay_signature=razorpay_signature
+            )
+        cart_items.delete()
+        messages.success(request, "✅ Payment successful and order placed.")
+        return redirect('my_orders')
+
+    # fallback
+    messages.error(request, "Unknown payment method.")
+    return redirect('cart')
+
+
+
+
+@login_required
+def delete_cart_item(request, item_id):
+    get_object_or_404(CartItem, id=item_id, user=request.user).delete()
+    return redirect('cart')
+
+@login_required
+def order_success(request):
+    return render(request, 'direct-selling/order_success.html')
+
+@login_required
+def my_orders(request):
+    orders = Order.objects.filter(buyer=request.user).order_by('-created_at')
+    return render(request, 'direct-selling/my_orders.html', {'orders': orders})
+
+@login_required
+def farmer_orders(request):
+    orders = Order.objects.filter(product__seller=request.user).order_by('-created_at')
+    return render(request, 'direct-selling/farmer_orders.html', {'orders': orders})
+
+
+# # ================== RAZORPAY PAYMENT ==================
+# @login_required
+# def checkout_payment(request):
+#     """
+#     Buyer checkout page with Razorpay payment integration
+#     """
+#     if UserProfile.objects.get(user=request.user).role != 'buyer':
+#         messages.error(request, "Only buyers can checkout.")
+#         return redirect('home')
+
+#     cart_items = CartItem.objects.filter(user=request.user)
+#     if not cart_items.exists():
+#         messages.error(request, "Your cart is empty.")
+#         return redirect('cart')
+
+#     # Calculate total price
+#     total_amount = sum(
+#         (item.product.price_per_unit or Decimal('0.00')) * (item.quantity or 0)
+#         for item in cart_items
+#     )
+#     amount_in_paise = int(total_amount * 100)
+
+#     # Create Razorpay order
+#     client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+#     payment_order = client.order.create({
+#         "amount": amount_in_paise,
+#         "currency": "INR",
+#         "payment_capture": 1
+#     })
+
+#     context = {
+#         "cart_items": cart_items,
+#         "total_amount": total_amount,
+#         "amount_in_paise": amount_in_paise,
+#         "api_key": settings.RAZORPAY_KEY_ID,
+#         "order_id": payment_order["id"]
+#     }
+#     return render(request, "direct-selling/checkout_payment.html", context)
+
+
+# @require_POST
+# @login_required
+# def payment_success(request):
+#     """
+#     Handle payment success callback from Razorpay
+#     """
+#     params_dict = {
+#         'razorpay_order_id': request.POST.get('razorpay_order_id'),
+#         'razorpay_payment_id': request.POST.get('razorpay_payment_id'),
+#         'razorpay_signature': request.POST.get('razorpay_signature')
+#     }
+
+#     client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
+#     try:
+#         # Verify signature to ensure payment is authentic
+#         client.utility.verify_payment_signature(params_dict)
+#     except razorpay.errors.SignatureVerificationError:
+#         messages.error(request, "Payment verification failed. Please contact support.")
+#         return redirect('cart')
+
+    # Save the order in DB
+    cart_items = CartItem.objects.filter(user=request.user)
+    for item in cart_items:
+        Order.objects.create(
+            buyer=request.user,
+            product=item.product,
+            quantity=item.quantity,
+            total_price=item.product.price_per_unit * item.quantity,
+            shipping_address="Payment done via Razorpay"
+        )
+    cart_items.delete()
+
+    messages.success(request, "✅ Payment successful! Your order has been placed.")
+    return redirect('my_orders')
+
+
+@login_required
+@require_POST
+def mark_order_completed(request, order_id):
+    order = get_object_or_404(Order, id=order_id, product__seller=request.user)
+    if order.status != 'Completed':
+        order.status = 'Completed'
+        order.save()
+        messages.success(request, f"Order #{order.id} marked as completed.")
+    return redirect('farmer_orders')
+
+
+# ========== QUALITY INPUTS MARKETPLACE ==========
+
+@login_required
+def upload_quality_input(request):
+    if request.method == 'POST':
+        form = QualityInputForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            quality_input = form.save(commit=False)
+            quality_input.seller = request.user
+            quality_input.save()
+            
+            # Get and compress images before saving
+            images = request.FILES.getlist('images')
+            compressed_images = compress_images_batch(images)
+            
+            for img in compressed_images:
+                QualityInputImage.objects.create(quality_input=quality_input, image=img)
+            
+            messages.success(request, "Quality input uploaded successfully with optimized images!")
+            return redirect('farmer_dashboard')
+    else:
+        form = QualityInputForm()
+    return render(request, 'quality-inputs/upload_quality_input.html', {'form': form})
+
+
+@login_required
+def quality_input_list(request):
+    form = QualityInputSearchForm(request.GET or None)
+    quality_inputs = QualityInput.objects.select_related('seller').all()
+    if form.is_valid() and form.cleaned_data['q']:
+        query = form.cleaned_data['q']
+        quality_inputs = quality_inputs.filter(
+            Q(name__icontains=query) |
+            Q(seller__username__icontains=query)
+        )
+    return render(request, 'quality-inputs/quality_input_list.html', {'quality_inputs': quality_inputs, 'form': form})
+
+
+@login_required
+def my_quality_inputs(request):
+    quality_inputs = QualityInput.objects.filter(seller=request.user)
+    return render(request, 'quality-inputs/my_quality_inputs.html', {'quality_inputs': quality_inputs})
+
+
+@login_required
+def edit_quality_input(request, quality_input_id):
+    quality_input = get_object_or_404(QualityInput, id=quality_input_id, seller=request.user)
+    if request.method == 'POST':
+        form = QualityInputForm(request.POST, request.FILES, instance=quality_input)
+        if form.is_valid():
+            form.save()
+            return redirect('my_quality_inputs')
+    else:
+        form = QualityInputForm(instance=quality_input)
+    return render(request, 'quality-inputs/edit_quality_input.html', {'form': form, 'quality_input': quality_input})
+
+
+@login_required
+def delete_quality_input(request, quality_input_id):
+    quality_input = get_object_or_404(QualityInput, id=quality_input_id, seller=request.user)
+    quality_input.delete()
+    return redirect('my_quality_inputs')
+
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def quality_input_detail(request, pk):
+    quality_input = get_object_or_404(QualityInput, pk=pk)
+    images = quality_input.images.all()
+    reviews = quality_input.reviews.order_by('-created_at')
+    if request.method == 'POST':
+        rating = request.POST.get('rating')
+        comment = request.POST.get('comment')
+        if rating and comment:
+            QualityInputReview.objects.create(quality_input=quality_input, user=request.user, rating=rating, comment=comment)
+            messages.success(request, 'Review submitted successfully.')
+            return redirect('quality_input_detail', pk=pk)
+    return render(request, 'quality-inputs/quality_input_detail.html', {'quality_input': quality_input, 'images': images, 'reviews': reviews})
+
+
+@login_required
+def delete_quality_input_review(request, review_id):
+    review = get_object_or_404(QualityInputReview, id=review_id)
+    if review.user == request.user:
+        review.delete()
+        messages.success(request, 'Review deleted successfully.')
+    else:
+        messages.error(request, 'You can only delete your own review.')
+    return redirect('quality_input_detail', pk=review.quality_input.pk)
+
+
+# ========== QUALITY INPUT CART AND ORDER ==========
+
+@login_required
+def add_quality_input_to_cart(request, quality_input_id):
+    quality_input = get_object_or_404(QualityInput, id=quality_input_id)
+    cart_item, _ = QualityInputCartItem.objects.get_or_create(user=request.user, quality_input=quality_input)
+    cart_item.unit = request.POST.get("unit", quality_input.unit)
+    cart_item.quantity = cart_item.quantity or 1
+    cart_item.save()
+    return redirect(request.GET.get('next') or 'quality_input_list')
+
+
+@login_required
+def quality_input_cart(request):
+    cart_items = QualityInputCartItem.objects.filter(user=request.user)
+    for item in cart_items:
+        item.item_total_price = (item.quality_input.price_per_unit or Decimal('0.00')) * (item.quantity or 0)
+    total_price = sum(item.item_total_price for item in cart_items)
+    amount_in_paise = int(total_price * Decimal('100'))
+
+    form = QualityInputOrderForm()
+    context = {
+        'cart_items': cart_items,
+        'total_price': total_price,
+        'form': form,
+        'RAZORPAY_KEY_ID': getattr(settings, 'RAZORPAY_KEY_ID', ''),
+        'amount_in_paise': amount_in_paise
+    }
+    return render(request, 'quality-inputs/quality_input_cart.html', context)
+
+
+@login_required
+@require_POST
+def update_quality_input_cart(request):
+    for item in QualityInputCartItem.objects.filter(user=request.user):
+        try:
+            qty = int(request.POST.get(f'quantity_{item.id}', '').strip() or 1)
+            item.quantity = qty
+            item.unit = request.POST.get(f'unit_{item.id}', '').strip() or item.unit
+            item.save()
+        except (ValueError, TypeError):
+            continue
+    messages.success(request, "Cart updated successfully.")
+    return redirect('quality_input_cart')
+
+
+@login_required
+def delete_quality_input_cart_item(request, item_id):
+    get_object_or_404(QualityInputCartItem, id=item_id, user=request.user).delete()
+    return redirect('quality_input_cart')
+
+
+@login_required
+@require_POST
+def place_quality_input_order(request):
+    """
+    Handles both COD and Online payments for quality inputs.
+    """
+    cart_items = QualityInputCartItem.objects.filter(user=request.user)
+    if not cart_items.exists():
+        messages.error(request, "Your cart is empty.")
+        return redirect('quality_input_cart')
+
+    form = QualityInputOrderForm(request.POST)
+    if not form.is_valid():
+        messages.error(request, "Please correct the errors in the form.")
+        total_price = sum((ci.quality_input.price_per_unit or Decimal('0.00')) * ci.quantity for ci in cart_items)
+        return render(request, 'quality-inputs/quality_input_cart.html', {
+            'cart_items': cart_items,
+            'total_price': total_price,
+            'form': form,
+            'RAZORPAY_KEY_ID': getattr(settings, 'RAZORPAY_KEY_ID', '')
+        })
+
+    payment_method = form.cleaned_data['payment_method']
+    total_price = sum((ci.quality_input.price_per_unit or Decimal('0.00')) * ci.quantity for ci in cart_items)
+
+    if payment_method == 'cod':
+        for item in cart_items:
+            QualityInputOrder.objects.create(
+                buyer=request.user,
+                quality_input=item.quality_input,
+                quantity=item.quantity,
+                address=form.cleaned_data['address'],
+                full_name=form.cleaned_data['full_name'],
+                email=form.cleaned_data['email'],
+                phone=form.cleaned_data['phone'],
+                payment_method='cod',
+                total_price=item.quality_input.price_per_unit * item.quantity,
+                status='Pending',
+                payment_status='Pending'
+            )
+        cart_items.delete()
+        messages.success(request, "✅ Order placed successfully (Cash on Delivery).")
+        return redirect('quality_input_my_orders')
+
+    elif payment_method == 'online':
+        razorpay_payment_id = request.POST.get('razorpay_payment_id')
+        razorpay_order_id = request.POST.get('razorpay_order_id')
+        razorpay_signature = request.POST.get('razorpay_signature')
+
+        if not (razorpay_payment_id and razorpay_order_id and razorpay_signature):
+            messages.error(request, "Missing payment details. Please try again.")
+            return redirect('quality_input_cart')
+
+        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+        params_dict = {
+            'razorpay_order_id': razorpay_order_id,
+            'razorpay_payment_id': razorpay_payment_id,
+            'razorpay_signature': razorpay_signature
+        }
+
+        try:
+            client.utility.verify_payment_signature(params_dict)
+        except razorpay.errors.SignatureVerificationError:
+            messages.error(request, "Payment verification failed. Please contact support.")
+            return redirect('quality_input_cart')
+        except Exception:
+            messages.error(request, "Payment verification failed. Please contact support.")
+            return redirect('quality_input_cart')
+
+        for item in cart_items:
+            QualityInputOrder.objects.create(
+                buyer=request.user,
+                quality_input=item.quality_input,
+                quantity=item.quantity,
+                address=form.cleaned_data['address'],
+                full_name=form.cleaned_data['full_name'],
+                email=form.cleaned_data['email'],
+                phone=form.cleaned_data['phone'],
+                payment_method='online',
+                total_price=item.quality_input.price_per_unit * item.quantity,
+                status='Pending',
+                payment_status='Paid',
+                razorpay_order_id=razorpay_order_id,
+                razorpay_payment_id=razorpay_payment_id,
+                razorpay_signature=razorpay_signature
+            )
+        cart_items.delete()
+        messages.success(request, "✅ Payment successful and order placed.")
+        return redirect('quality_input_my_orders')
+
+    messages.error(request, "Unknown payment method.")
+    return redirect('quality_input_cart')
+
+
+@login_required
+def quality_input_my_orders(request):
+    orders = QualityInputOrder.objects.filter(buyer=request.user).order_by('-created_at')
+    return render(request, 'quality-inputs/quality_input_my_orders.html', {'orders': orders})
+
+
+@login_required
+def quality_input_farmer_orders(request):
+    orders = QualityInputOrder.objects.filter(quality_input__seller=request.user).order_by('-created_at')
+    return render(request, 'quality-inputs/quality_input_farmer_orders.html', {'orders': orders})
+
+
+@login_required
+@require_POST
+def mark_quality_input_order_completed(request, order_id):
+    order = get_object_or_404(QualityInputOrder, id=order_id, quality_input__seller=request.user)
+    if order.status != 'Completed':
+        order.status = 'Completed'
+        order.save()
+        messages.success(request, f"Order #{order.id} marked as completed.")
+    return redirect('quality_input_farmer_orders')
+
+
+# ========== OTHER FEATURES ==========
+
+# @login_required
+# def profile(request):
+#     profile = FarmerProfile.objects.filter(user=request.user).first()
+#     return render(request, 'marketplace/profile.html', {'profile': profile})
+# aaj yaha pe change kiye h 
+@login_required
+def profile(request):
+    user = request.user
+    role = user.userprofile.role  # Assuming you have a UserProfile model connected to User
+
+    if role == "farmer":
+        profile = FarmerProfile.objects.filter(user=user).first()
+    elif role == "buyer":
+        profile = BuyerProfile.objects.filter(user=user).first()
+    else:
+        profile = None
+
+    return render(request, 'marketplace/profile.html', {
+        'user': user,
+        'role': role,
+        'profile': profile
+    })
+
+
+
+
+@login_required
+def crop_price_view(request):
+    crop_prices = CropPrice.objects.all().order_by('crop_name')
+    return render(request, 'marketplace/crop_price.html', {'crop_prices': crop_prices})
+
+# Crop Prediction
+with open(os.path.join(settings.BASE_DIR, 'ml_models', 'minmaxscaler.pkl'), 'rb') as f:
+    scaler = pickle.load(f)
+with open(os.path.join(settings.BASE_DIR, 'ml_models', 'model.pkl'), 'rb') as f:
+    model = pickle.load(f)
+
+LABEL_TO_CROP = {1: 'rice', 2: 'maize', 3: 'jute', 4: 'cotton', 5: 'coconut', 6: 'papaya', 7: 'orange', 8: 'apple', 9: 'muskmelon', 10: 'watermelon', 11: 'grapes', 12: 'mango', 13: 'banana', 14: 'pomegranate', 15: 'lentil', 16: 'blackgram', 17: 'mungbean', 18: 'mothbeans', 19: 'pigeonpeas', 20: 'kidneybeans', 21: 'chickpea', 22: 'coffee'}
+
+@login_required
+def predict_crop(request):
+    result, input_values = None, None
+    if request.method == 'POST':
+        form = CropInputForm(request.POST)
+        if form.is_valid():
+            input_values = form.cleaned_data
+            data = [
+                input_values['nitrogen'], input_values['phosphorus'],
+                input_values['potassium'], input_values['pH'],
+                input_values.get('temperature', 0),
+                input_values.get('humidity', 0),
+                input_values.get('rainfall', 0)
+            ]
+            scaled = scaler.transform([data])
+            prediction = model.predict(scaled)[0]
+            result = LABEL_TO_CROP.get(prediction, 'Unknown Crop')
+            form = CropInputForm()
+    else:
+        form = CropInputForm()
+    return render(request, 'marketplace/predict_crop.html', {'form': form, 'result': result, 'input_values': input_values})
+
+# Yield Prediction
+with open(os.path.join(settings.BASE_DIR, 'ml_models', 'dtr.pkl'), 'rb') as f:
+    yield_model = pickle.load(f)
+with open(os.path.join(settings.BASE_DIR, 'ml_models', 'preprocessor.pkl'), 'rb') as f:
+    preprocessor = pickle.load(f)
+
+@login_required
+def yeild_predict(request):
+    prediction, entered_data = None, None
+    if request.method == 'POST':
+        form = YieldPredictionForm(request.POST)
+        if form.is_valid():
+            entered_data = form.cleaned_data
+            df = pd.DataFrame([{
+                'Year': entered_data['year'],
+                'average_rain_fall_mm_per_year': entered_data['average_rain_fall_mm_per_year'],
+                'pesticides_tonnes': entered_data['pesticides_tonnes'],
+                'avg_temp': entered_data['avg_temp'],
+                'Area': entered_data['area'],
+                'Item': entered_data['item']
+            }])
+            X = preprocessor.transform(df)
+            prediction = round(yield_model.predict(X)[0], 2)
+            form = YieldPredictionForm()
+    else:
+        form = YieldPredictionForm()
+    return render(request, 'marketplace/yield_predict.html', {'form': form, 'prediction': prediction, 'entered_data': entered_data})
+
+@login_required
+def contact_view(request):
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Thanks for contacting us. We will get back to you soon!')
+            return redirect('contact')
+    else:
+        form = ContactForm()
+    return render(request, 'marketplace/contact.html', {'form': form})
+

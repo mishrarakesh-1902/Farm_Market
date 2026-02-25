@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quality Input Orders</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f0f7ff;
+      margin: 0;
+      padding: 30px 15px;
+      color: #333;
+    }
+
+    h2 {
+      text-align: center;
+      color: #1a7cb5;
+      margin-bottom: 30px;
+    }
+
+    .home-btn {
+      background-color: #1a7cb5;
+      color: white;
+      padding: 8px 15px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 500;
+      display: inline-block;
+      margin-bottom: 20px;
+    }
+    .home-btn:hover {
+      background-color: #0d5a8c;
+      text-decoration: none;
+      color: white;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .orders-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    .order-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+      transition: transform 0.2s ease;
+      border-left: 4px solid #1a7cb5;
+    }
+
+    .order-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .order-title {
+      font-size: 18px;
+      color: #1a7cb5;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .order-info {
+      font-size: 15px;
+      margin-bottom: 6px;
+      color: #444;
+    }
+
+    .order-info span {
+      font-weight: 600;
+      color: #000;
+    }
+
+    .btn-complete {
+      display: inline-block;
+      background-color: #5c9ead;
+      color: #fff;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 5px;
+      text-align: center;
+      font-size: 14px;
+      margin-top: 10px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .btn-complete:hover {
+      background-color: #3d6f82;
+    }
+
+    .status-tag {
+      display: inline-block;
+      padding: 4px 10px;
+      font-size: 13px;
+      border-radius: 20px;
+      color: white;
+      font-weight: 600;
+    }
+
+    .Pending {
+      background-color: #ffc107;
+    }
+
+    .Completed {
+      background-color: #28a745;
+    }
+
+    .badge-category {
+      background-color: #5c9ead;
+      color: white;
+      padding: 3px 8px;
+      border-radius: 5px;
+      font-size: 0.85rem;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+
+<div class="text-center">
+  <a href="{% url 'farmer_dashboard' %}" class="home-btn">🏠 Home</a>
+</div>
+
+<h2>📦 Quality Input Orders</h2>
+
+<div class="orders-container">
+  {% for order in orders %}
+  <div class="order-card">
+    <div class="order-title">🌱 {{ order.quality_input.name }}</div>
+    <span class="badge-category">{{ order.quality_input.get_category_display }}</span>
+
+    <div class="order-info" style="margin-top: 10px;"><span>Quantity:</span> {{ order.quantity }} {{ order.quality_input.unit }}</div>
+    <div class="order-info"><span>Total Price:</span> ₹{{ order.total_price }}</div>
+    <div class="order-info"><span>Status:</span> <span class="status-tag {{ order.status }}">{{ order.status }}</span></div>
+    <div class="order-info"><span>Payment:</span> {{ order.payment_status }}</div>
+
+    <hr style="margin: 10px 0;">
+
+    <div class="order-info"><span>Buyer Name:</span> {{ order.full_name }}</div>
+    <div class="order-info"><span>Email:</span> {{ order.email }}</div>
+    <div class="order-info"><span>Phone:</span> {{ order.phone }}</div>
+    <div class="order-info"><span>Address:</span> {{ order.address }}</div>
+    <div class="order-info"><span>Payment Method:</span> {{ order.payment_method }}</div>
+
+    <div class="order-info"><span>Ordered On:</span> {{ order.created_at|date:"d M Y, H:i" }}</div>
+
+    {% if order.status == "Pending" %}
+    <form method="POST" action="{% url 'mark_quality_input_order_completed' order.id %}">
+      {% csrf_token %}
+      <button type="submit" class="btn-complete">Mark as Completed</button>
+    </form>
+    {% endif %}
+  </div>
+  {% empty %}
+  <p style="text-align: center; font-size: 16px; color: #777; grid-column: 1 / -1;">No orders received yet.</p>
+  {% endfor %}
+</div>
+
+</body>
+</html>

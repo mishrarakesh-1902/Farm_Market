@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI-Powered Farm Market</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- ✅ SweetAlert CDN -->
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f9f6;
+      color: #333;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(135deg, #2e8b57 0%, #1e5c3f 100%);
+      padding: 12px 30px;
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      flex-wrap: wrap;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .logo {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 160px;
+    }
+
+    .logo i {
+      font-size: 2rem;
+    }
+
+    .menu-toggle {
+      display: none;
+      font-size: 1.8rem;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 6px;
+      transition: background 0.3s;
+    }
+
+    .menu-toggle:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      flex: 1;
+      justify-content: center;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    nav ul li {
+      position: relative;
+    }
+
+    nav ul li a {
+      text-decoration: none;
+      color: white;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    nav ul li a:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    nav ul li a i {
+      font-size: 1rem;
+    }
+
+    .auth-buttons {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-left: auto;
+    }
+
+    .welcome-text {
+      font-weight: 600;
+      padding: 8px 14px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      white-space: nowrap;
+      font-size: 0.95rem;
+    }
+
+    .auth-buttons a {
+      text-decoration: none;
+      color: white;
+      padding: 8px 16px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .auth-buttons a:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .auth-buttons a i {
+      font-size: 0.9rem;
+    }
+
+    .hero {
+      padding: 80px 30px;
+      text-align: center;
+      background: linear-gradient(to right, #e8f5e9, #ffffff);
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      color: #2e7d32;
+      margin-bottom: 20px;
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      max-width: 750px;
+      margin: auto;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    .cta-btn {
+      margin-top: 30px;
+      padding: 14px 36px;
+      background: #2e8b57;
+      border: none;
+      border-radius: 30px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .cta-btn a {
+      color: white;
+      text-decoration: none;
+    }
+
+    .cta-btn:hover {
+      background: #276b45;
+    }
+
+    .features {
+      padding: 60px 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      gap: 30px;
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      transition: 0.3s;
+      text-align: center;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+    }
+
+    .card h3 {
+      color: #2e8b57;
+      font-size: 1.4rem;
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      color: #555;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      margin-bottom: 15px;
+    }
+
+    .card a {
+      display: inline-block;
+      text-decoration: none;
+      background: #2e8b57;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-size: 0.95rem;
+      transition: 0.3s;
+    }
+
+    .card a:hover {
+      background: #276b45;
+    }
+
+    footer {
+      background: linear-gradient(135deg, #2e8b57 0%, #1e5c3f 100%);
+      color: #fff;
+      padding: 60px 30px 30px;
+      margin-top: 80px;
+      border-top: 2px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+
+    .footer-section h4 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .footer-section h4 i {
+      font-size: 1.3rem;
+      color: #a8e6c9;
+    }
+
+    .footer-section ul {
+      list-style: none;
+    }
+
+    .footer-section ul li {
+      margin-bottom: 12px;
+    }
+
+    .footer-section ul li a {
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.95rem;
+    }
+
+    .footer-section ul li a:hover {
+      color: #a8e6c9;
+      transform: translateX(5px);
+    }
+
+    .footer-section p {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .social-links {
+      display: flex;
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .social-links a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      color: white;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      font-size: 1.1rem;
+    }
+
+    .social-links a:hover {
+      background: #a8e6c9;
+      color: #1e5c3f;
+      transform: translateY(-3px);
+    }
+
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-top: 30px;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .footer-bottom p {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.9rem;
+      margin: 0;
+    }
+
+    .footer-links-bottom {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links-bottom a {
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+    }
+
+    .footer-links-bottom a:hover {
+      color: #a8e6c9;
+    }
+
+    @media (max-width: 1024px) {
+      nav {
+        padding: 10px 15px;
+      }
+
+      .logo {
+        font-size: 1.4rem;
+        min-width: auto;
+      }
+
+      nav ul li a {
+        padding: 6px 10px;
+        font-size: 0.85rem;
+      }
+
+      .auth-buttons {
+        gap: 8px;
+      }
+
+      .auth-buttons a,
+      .welcome-text {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      nav {
+        padding: 10px 15px;
+      }
+
+      .logo {
+        font-size: 1.2rem;
+        min-width: auto;
+      }
+
+      .logo i {
+        font-size: 1.5rem;
+      }
+
+      .menu-toggle {
+        display: block;
+        order: 3;
+      }
+
+      .nav-links {
+        flex-direction: column;
+        width: 100%;
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: linear-gradient(135deg, #2e8b57 0%, #1e5c3f 100%);
+        padding: 15px;
+        animation: slideDown 0.4s ease-in-out forwards;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      }
+
+      .nav-links.show {
+        display: flex;
+      }
+
+      nav ul {
+        flex-direction: column;
+        gap: 5px;
+        width: 100%;
+      }
+
+      nav ul li a {
+        padding: 10px 12px;
+        font-size: 0.9rem;
+        border-radius: 6px;
+      }
+
+      .auth-buttons {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        margin-top: 12px;
+        gap: 8px;
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+        padding-top: 12px;
+      }
+
+      .auth-buttons a,
+      .welcome-text {
+        width: 100%;
+        padding: 10px 12px;
+        text-align: center;
+        font-size: 0.9rem;
+      }
+
+      .features {
+        padding: 40px 15px;
+        gap: 20px;
+      }
+
+      .card {
+        padding: 20px;
+        border-radius: 15px;
+      }
+
+      .card h3 {
+        font-size: 1.2rem;
+      }
+
+      .hero h1 {
+        font-size: 2rem;
+      }
+
+      .hero p {
+        font-size: 1rem;
+      }
+
+      .cta-btn {
+        padding: 12px 26px;
+        font-size: 0.9rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      nav {
+        padding: 10px 12px;
+      }
+
+      .logo {
+        font-size: 1rem;
+      }
+
+      .logo i {
+        display: none;
+      }
+
+      .menu-toggle {
+        font-size: 1.5rem;
+      }
+
+      nav ul li a {
+        padding: 8px 10px;
+        font-size: 0.8rem;
+      }
+
+      .welcome-text {
+        font-size: 0.8rem;
+        padding: 6px 10px;
+      }
+
+      .features {
+        padding: 30px 10px;
+        grid-template-columns: 1fr;
+      }
+
+      .card {
+        padding: 15px;
+      }
+
+      .card h3 {
+        font-size: 1rem;
+      }
+
+      .card p {
+        font-size: 0.85rem;
+      }
+
+      .card a {
+        padding: 8px 16px;
+        font-size: 0.85rem;
+      }
+
+      .hero {
+        padding: 50px 15px;
+      }
+
+      .hero h1 {
+        font-size: 1.5rem;
+      }
+
+      .hero p {
+        font-size: 0.9rem;
+      }
+
+      footer {
+        padding: 40px 15px 20px;
+      }
+
+      .footer-content {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+
+      .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .footer-links-bottom {
+        justify-content: center;
+      }
+
+      .footer-section h4 {
+        font-size: 1rem;
+      }
+
+      .social-links {
+        justify-content: flex-start;
+      }
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav>
+    <div class="logo"><i class="fas fa-leaf"></i> Farm Market</div>
+    <div class="menu-toggle" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
+    <div class="nav-links" id="navLinks">
+      <ul>
+        {% if user.is_authenticated %}
+            {% if user.userprofile.role == "farmer" %}
+                <li><a href="{% url 'farmer_dashboard' %}"><i class="fas fa-home"></i> Home</a></li>
+            {% elif user.userprofile.role == "buyer" %}
+                <li><a href="{% url 'buyer_dashboard' %}"><i class="fas fa-home"></i> Home</a></li>
+            {% else %}
+                <li><a href="{% url 'home' %}"><i class="fas fa-home"></i> Home</a></li>
+            {% endif %}
+        {% else %}
+            <li><a href="{% url 'home' %}"><i class="fas fa-home"></i> Home</a></li>
+        {% endif %}
+        
+        <li><a href="{% url 'upload_product' %}"><i class="fas fa-upload"></i> Register Product</a></li>
+        <li><a href="{% url 'my_products' %}"><i class="fas fa-box"></i> My Products</a></li>
+        {% if user.is_authenticated and user.userprofile.role == "farmer" %}
+        <li><a href="{% url 'upload_quality_input' %}"><i class="fas fa-plus"></i> Sell Quality Input</a></li>
+        <li><a href="{% url 'my_quality_inputs' %}"><i class="fas fa-box"></i> Manage My Inputs</a></li>
+        {% endif %}
+        <li><a href="{% url 'contact' %}"><i class="fas fa-envelope"></i> Contact</a></li>
+        {% if user.is_authenticated and user.farmer_products.exists %}
+        <li><a href="{% url 'farmer_orders' %}"><i class="fas fa-shopping-basket"></i> My Orders</a></li>
+        {% endif %}
+        <li><a href="{% url 'my_orders' %}"><i class="fa-solid fa-box-open"></i> Order History</a></li>
+      </ul>
+      <div class="auth-buttons">
+        {% if user.is_authenticated %}
+          <span class="welcome-text">👋 {{ user.username }}</span>
+          <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        {% else %}
+          <a href="{% url 'register' %}"><i class="fas fa-user-plus"></i> Register</a>
+          <a href="{% url 'login' %}"><i class="fas fa-sign-in-alt"></i> Login</a>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <h1>Empowering Farmers with AI</h1>
+    <p>Our platform connects farmers directly to buyers, provides real-time market insights, and reduces crop wastage using smart AI tools.</p>
+    <button class="cta-btn">
+      <a href="{% url 'product_list' %}">Get Started</a>
+    </button>
+  </section>
+
+  <!-- Features -->
+  <section class="features">
+    <div class="card">
+      <h3>🚜 Direct Selling</h3>
+      <p>Connect directly to buyers using AI-powered marketplace tools and eliminate middlemen.</p>
+      <a href="{% url 'product_list' %}">Explore Now</a>
+    </div>
+    <div class="card">
+      <h3>🌾 Predict Best Crop</h3>
+      <p>Use our AI model to predict the best crop based on soil and climate data.</p>
+      <a href="{% url 'predict_crop' %}">Predict</a>
+    </div>
+    <div class="card">
+      <h3>📈 Predict Crop Yield</h3>
+      <p>Estimate production using past data and weather trends for better planning.</p>
+      <a href="{% url 'yeild_predict' %}">Predict</a>
+    </div>
+    <div class="card">
+      <h3>🧪 Quality Inputs</h3>
+      <p>Buy verified seeds, fertilizers, and other farming inputs from trusted sellers.</p>
+      <a href="{% url 'quality_input_list' %}">Explore Now</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <!-- About Section -->
+      <div class="footer-section">
+        <h4><i class="fas fa-leaf"></i> Farm Market</h4>
+        <p>Empowering farmers with AI-powered tools for better yields, fair prices, and sustainable farming practices.</p>
+        <div class="social-links">
+          <a href="#" title="Facebook"><i class="fab fa-facebook"></i></a>
+          <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+          <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="footer-section">
+        <h4><i class="fas fa-link"></i> Quick Links</h4>
+        <ul>
+          <li><a href="{% url 'home' %}"><i class="fas fa-arrow-right-long"></i> Home</a></li>
+          <li><a href="{% url 'product_list' %}"><i class="fas fa-arrow-right-long"></i> Products</a></li>
+          <li><a href="{% url 'quality_input_list' %}"><i class="fas fa-arrow-right-long"></i> Quality Inputs</a></li>
+          <li><a href="{% url 'contact' %}"><i class="fas fa-arrow-right-long"></i> Contact Us</a></li>
+        </ul>
+      </div>
+
+      <!-- Features -->
+      <div class="footer-section">
+        <h4><i class="fas fa-star"></i> Features</h4>
+        <ul>
+          <li><a href="{% url 'predict_crop' %}"><i class="fas fa-arrow-right-long"></i> AI Predictions</a></li>
+          <li><a href="{% url 'yeild_predict' %}"><i class="fas fa-arrow-right-long"></i> Yield Forecasting</a></li>
+          <li><a href="{% url 'product_list' %}"><i class="fas fa-arrow-right-long"></i> Direct Selling</a></li>
+          <li><a href="{% url 'quality_input_list' %}"><i class="fas fa-arrow-right-long"></i> Buy Inputs</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact Info -->
+      <div class="footer-section">
+        <h4><i class="fas fa-envelope"></i> Get in Touch</h4>
+        <ul>
+          <li><i class="fas fa-phone" style="color: #a8e6c9;"></i> +91 1234-567-890</li>
+          <li><i class="fas fa-envelope" style="color: #a8e6c9;"></i> support@farmmarket.com</li>
+          <li><i class="fas fa-map-location-dot" style="color: #a8e6c9;"></i> India</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Footer Bottom -->
+    <div class="footer-bottom">
+      <p>&copy; 2025 Farm Market Platform. All rights reserved.</p>
+      <div class="footer-links-bottom">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms & Conditions</a>
+        <a href="#">Cookie Policy</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toggle Menu Script -->
+  <script>
+    function toggleMenu() {
+      document.getElementById('navLinks').classList.toggle('show');
+    }
+  </script>
+
+  <!-- SweetAlert Message Popup -->
+  {% if messages %}
+  <script>
+    {% for message in messages %}
+      Swal.fire({
+        icon: 'success',
+        title: "{{ message|escapejs }}",
+        showConfirmButton: false,
+        timer: 2500,
+        timerProgressBar: true
+      });
+    {% endfor %}
+  </script>
+  {% endif %}
+
+</body>
+</html>

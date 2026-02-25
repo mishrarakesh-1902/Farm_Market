@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Quality Inputs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f0f7ff;
+      min-height: 100vh;
+      padding-top: 60px;
+      padding-bottom: 60px;
+    }
+
+    .container {
+      max-width: 1000px;
+    }
+
+    h2 {
+      font-size: 2rem;
+      color: #1a7cb5;
+      font-weight: bold;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .back-btn {
+      background-color: #1a7cb5;
+      color: white;
+      text-decoration: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+      display: inline-block;
+      margin-bottom: 20px;
+    }
+
+    .back-btn:hover {
+      background-color: #0d5a8c;
+      text-decoration: none;
+      color: white;
+    }
+
+    .product-card {
+      border-radius: 15px;
+      border: 1px solid #c3e7f0;
+      margin-bottom: 20px;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(26, 124, 181, 0.2);
+    }
+
+    .product-row {
+      display: flex;
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .product-image {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    .product-info {
+      flex: 1;
+    }
+
+    .product-name {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #1a7cb5;
+      margin-bottom: 5px;
+    }
+
+    .product-details {
+      color: #555;
+      font-size: 0.95rem;
+      margin-bottom: 5px;
+    }
+
+    .product-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .btn-edit {
+      background-color: #5c9ead;
+      color: white;
+      padding: 8px 15px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn-edit:hover {
+      background-color: #3d6f82;
+      text-decoration: none;
+      color: white;
+    }
+
+    .btn-delete {
+      background-color: #d9534f;
+      color: white;
+      padding: 8px 15px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn-delete:hover {
+      background-color: #ac2925;
+    }
+
+    .empty-message {
+      text-align: center;
+      padding: 40px 20px;
+      color: #666;
+    }
+
+    .badge-category {
+      background-color: #5c9ead;
+      color: white;
+      padding: 3px 8px;
+      border-radius: 5px;
+      font-size: 0.8rem;
+      display: inline-block;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <a href="{% url 'farmer_dashboard' %}" class="back-btn">← Back to Dashboard</a>
+  
+  <h2>🌱 My Quality Inputs</h2>
+
+  {% if quality_inputs %}
+    {% for quality_input in quality_inputs %}
+      <div class="product-card">
+        <div class="product-row">
+          {% if quality_input.images.first %}
+            <img src="{{ quality_input.images.first.image.url }}" alt="{{ quality_input.name }}" class="product-image">
+          {% else %}
+            <img src="https://via.placeholder.com/150x150?text=No+Image" alt="No Image" class="product-image">
+          {% endif %}
+
+          <div class="product-info">
+            <div class="product-name">{{ quality_input.name }}</div>
+            <span class="badge-category">{{ quality_input.get_category_display }}</span>
+            <div class="product-details"><strong>Category:</strong> {{ quality_input.get_category_display }}</div>
+            <div class="product-details"><strong>Price:</strong> ₹{{ quality_input.price_per_unit }}/{{ quality_input.unit }}</div>
+            <div class="product-details"><strong>Quantity:</strong> {{ quality_input.quantity }}</div>
+            <div class="product-details"><strong>Location:</strong> {{ quality_input.location }}</div>
+            <div class="product-details"><strong>Posted:</strong> {{ quality_input.posted_on }}</div>
+
+            <div class="product-actions">
+              <a href="{% url 'edit_quality_input' quality_input.id %}" class="btn-edit">✏️ Edit</a>
+              <form method="POST" action="{% url 'delete_quality_input' quality_input.id %}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this?');">
+                {% csrf_token %}
+                <button type="submit" class="btn-delete">🗑️ Delete</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty-message">
+      <p>No quality inputs listed yet. <a href="{% url 'upload_quality_input' %}">Upload one now!</a></p>
+    </div>
+  {% endif %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
