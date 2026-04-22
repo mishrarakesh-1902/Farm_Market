@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-[#F8F9FA]">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="FarmDirect Agro-Tech Suite - High-fidelity AI-powered marketplace connecting farmers directly to global markets with real-time analytics and quality assurance.">
+    <meta name="keywords" content="Agro-tech, Farmers Marketplace, AI Crop Prediction, Sustainable Farming, Direct Agriculture Sales">
+    <title>{% block title %}FarmDirect | Premium Agro-Tech Suite{% endblock %}</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Tailwind Play CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'forest': {
+                            DEFAULT: '#1B4332',
+                            50: '#F0F5F2',
+                            100: '#E1EBE6',
+                            800: '#1B4332',
+                            900: '#0C2118',
+                        },
+                        'terracotta': '#BC4749',
+                        'porcelain': '#F8F9FA',
+                    },
+                    fontFamily: {
+                        'manrope': ['Manrope', 'sans-serif'],
+                        'inter': ['Inter', 'sans-serif'],
+                    },
+                    borderRadius: {
+                        'card': '16px',
+                    },
+                    backdropBlur: {
+                        'glass': '20px',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer components {
+            .glass-card {
+                @apply bg-white/65 backdrop-blur-glass border border-white/20 shadow-xl rounded-card overflow-hidden;
+            }
+            .btn-primary {
+                @apply bg-forest text-white px-6 py-3 rounded-lg font-bold transition-all hover:bg-forest-900 active:scale-95;
+            }
+            .btn-accent {
+                @apply bg-terracotta text-white px-6 py-3 rounded-lg font-bold transition-all hover:opacity-90 active:scale-95;
+            }
+            .nav-link {
+                @apply text-forest/70 hover:text-forest font-medium transition-colors relative after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[2px] after:bg-forest after:transition-all hover:after:w-full;
+            }
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Manrope', sans-serif;
+        }
+    </style>
+    
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="h-full flex flex-col selection:bg-forest/10 selection:text-forest">
+    
+    <!-- Navigation Overlay (for mobile) -->
+    <div id="mobile-overlay" class="fixed inset-0 bg-forest/20 backdrop-blur-sm z-[100] opacity-0 pointer-events-none transition-opacity duration-300"></div>
+
+    <!-- Header -->
+    {% include "components/navbar.html" %}
+
+    <!-- Main Content -->
+    <main class="flex-grow pt-20">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    {% include "components/footer.html" %}
+
+    <!-- Global Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Toggle mobile menu
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const overlay = document.getElementById('mobile-overlay');
+            menu.classList.toggle('translate-x-full');
+            overlay.classList.toggle('opacity-0');
+            overlay.classList.toggle('pointer-events-none');
+        }
+
+        // Auto-close messages/SweetAlert
+        {% if messages %}
+        document.addEventListener('DOMContentLoaded', () => {
+            {% for message in messages %}
+            Swal.fire({
+                icon: '{{ message.tags|default:"info" }}',
+                title: '{{ message }}',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
+            {% endfor %}
+        });
+        {% endif %}
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

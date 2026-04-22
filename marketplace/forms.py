@@ -69,14 +69,48 @@ class CropInputForm(forms.Form):
     humidity = forms.FloatField(label='Humidity (%)', required=False)
     rainfall = forms.FloatField(label='Rainfall (mm)', required=False)
 
-# ✅ Yield Prediction Form
+# ✅ Yield Prediction Choices
+STATE_CHOICES = [
+    ('Andhra Pradesh', 'Andhra Pradesh'), ('Arunachal Pradesh', 'Arunachal Pradesh'), ('Assam', 'Assam'), ('Bihar', 'Bihar'),
+    ('Chhattisgarh', 'Chhattisgarh'), ('Delhi', 'Delhi'), ('Goa', 'Goa'), ('Gujarat', 'Gujarat'), ('Haryana', 'Haryana'),
+    ('Himachal Pradesh', 'Himachal Pradesh'), ('Jammu and Kashmir', 'Jammu and Kashmir'), ('Jharkhand', 'Jharkhand'),
+    ('Karnataka', 'Karnataka'), ('Kerala', 'Kerala'), ('Madhya Pradesh', 'Madhya Pradesh'), ('Maharashtra', 'Maharashtra'),
+    ('Manipur', 'Manipur'), ('Meghalaya', 'Meghalaya'), ('Mizoram', 'Mizoram'), ('Nagaland', 'Nagaland'), ('Odisha', 'Odisha'),
+    ('Puducherry', 'Puducherry'), ('Punjab', 'Punjab'), ('Sikkim', 'Sikkim'), ('Tamil Nadu', 'Tamil Nadu'), ('Telangana', 'Telangana'),
+    ('Tripura', 'Tripura'), ('Uttar Pradesh', 'Uttar Pradesh'), ('Uttarakhand', 'Uttarakhand'), ('West Bengal', 'West Bengal')
+]
+
+SEASON_CHOICES = [
+    ('Autumn', 'Autumn'), ('Kharif', 'Kharif'), ('Rabi', 'Rabi'), ('Summer', 'Summer'), ('Whole Year', 'Whole Year'), ('Winter', 'Winter')
+]
+
+CROP_YIELD_CHOICES = [
+    ('Arecanut', 'Arecanut'), ('Arhar/Tur', 'Arhar/Tur'), ('Bajra', 'Bajra'), ('Banana', 'Banana'), ('Barley', 'Barley'),
+    ('Black pepper', 'Black pepper'), ('Cardamom', 'Cardamom'), ('Cashewnut', 'Cashewnut'), ('Castor seed', 'Castor seed'),
+    ('Coconut', 'Coconut'), ('Coriander', 'Coriander'), ('Cotton(lint)', 'Cotton(lint)'), ('Cowpea(Lobia)', 'Cowpea(Lobia)'),
+    ('Dry chillies', 'Dry chillies'), ('Garlic', 'Garlic'), ('Ginger', 'Ginger'), ('Gram', 'Gram'), ('Groundnut', 'Groundnut'),
+    ('Guar seed', 'Guar seed'), ('Horse-gram', 'Horse-gram'), ('Jowar', 'Jowar'), ('Jute', 'Jute'), ('Khesari', 'Khesari'),
+    ('Linseed', 'Linseed'), ('Maize', 'Maize'), ('Masoor', 'Masoor'), ('Mesta', 'Mesta'), ('Moong(Green Gram)', 'Moong(Green Gram)'),
+    ('Moth', 'Moth'), ('Niger seed', 'Niger seed'), ('Oilseeds total', 'Oilseeds total'), ('Onion', 'Onion'),
+    ('Other Rabi pulses', 'Other Rabi pulses'), ('Other Cereals', 'Other Cereals'), ('Other Kharif pulses', 'Other Kharif pulses'),
+    ('Other Summer Pulses', 'Other Summer Pulses'), ('Peas & beans (Pulses)', 'Peas & beans (Pulses)'), ('Potato', 'Potato'),
+    ('Ragi', 'Ragi'), ('Rapeseed &Mustard', 'Rapeseed &Mustard'), ('Rice', 'Rice'), ('Safflower', 'Safflower'),
+    ('Sannhamp', 'Sannhamp'), ('Sesamum', 'Sesamum'), ('Small millets', 'Small millets'), ('Soyabean', 'Soyabean'),
+    ('Sugarcane', 'Sugarcane'), ('Sunflower', 'Sunflower'), ('Sweet potato', 'Sweet potato'), ('Tapioca', 'Tapioca'),
+    ('Tobacco', 'Tobacco'), ('Turmeric', 'Turmeric'), ('Urad', 'Urad'), ('Wheat', 'Wheat'), ('other oilseeds', 'other oilseeds')
+]
+
 class YieldPredictionForm(forms.Form):
-    year = forms.IntegerField(label='Year')
-    average_rain_fall_mm_per_year = forms.FloatField(label='Average Rainfall (mm/year)')
-    pesticides_tonnes = forms.FloatField(label='Pesticides (tonnes)')
-    avg_temp = forms.FloatField(label='Average Temperature (°C)')
-    area = forms.CharField(label='Area', max_length=100)
-    item = forms.CharField(label='Crop Item', max_length=100)
+    state = forms.ChoiceField(label='State', choices=STATE_CHOICES)
+    crop = forms.ChoiceField(label='Crop Type', choices=CROP_YIELD_CHOICES)
+    season = forms.ChoiceField(label='Season', choices=SEASON_CHOICES)
+    year = forms.IntegerField(label='Crop Year')
+    area = forms.FloatField(label='Area (Hectares)')
+    rainfall = forms.FloatField(label='Annual Rainfall (mm)')
+    fertilizer = forms.FloatField(label='Fertilizer Used (kg)')
+    pesticide = forms.FloatField(label='Pesticide Used (kg)')
+    historical_yield = forms.FloatField(label='Previous Production per Area (Optional)', required=False, initial=0)
+
 
 # ✅ Contact Form
 class ContactForm(forms.ModelForm):

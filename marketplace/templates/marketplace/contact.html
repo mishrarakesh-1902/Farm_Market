@@ -1,135 +1,203 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Contact Us | Farm Project</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(to right, #d3cce3, #e9e4f0);
-            margin: 0;
-            padding: 40px;
-        }
+{% extends "base.html" %}
+{% load static %}
 
-        .container {
-            max-width: 700px;
-            background-color: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            margin: auto;
-        }
+{% block title %}Contact Us | FarmDirect Agro-Tech Suite{% endblock %}
 
-        h2 {
-            text-align: center;
-            color: #2c3e50;
-        }
+{% block extra_head %}
+<!-- EmailJS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script>
+    (function(){
+        emailjs.init("uRjHxH7a-nri9pGQq");
+    })();
+</script>
+{% endblock %}
 
-        input, textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 16px;
-            margin-bottom: 20px;
-        }
-
-        textarea {
-            resize: vertical;
-            height: 120px;
-        }
-
-        button {
-            background-color: #27ae60;
-            color: white;
-            padding: 14px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            width: 100%;
-        }
-
-        button:hover {
-            background-color: #219150;
-        }
-
-        .success {
-            background-color: #e0f8e9;
-            color: #2e7d32;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .home-button {
-            text-align: right;
-            margin-bottom: 20px;
-        }
-
-        .home-button a {
-            background-color: #2e7d32;
-            color: white;
-            padding: 10px 18px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .home-button a:hover {
-            background-color: #1b5e20;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-
-        <div class="home-button">
-            {% if user.is_authenticated %}
-              {% if user.userprofile.role == "farmer" %}
-                <a href="{% url 'farmer_dashboard' %}">🏠 Home</a>
-              {% elif user.userprofile.role == "buyer" %}
-                <a href="{% url 'buyer_dashboard' %}">🏠 Home</a>
-              {% else %}
-                <a href="{% url 'home' %}">🏠 Home</a>
-              {% endif %}
-            {% else %}
-              <a href="{% url 'home' %}">🏠 Home</a>
-            {% endif %}
-        </div>
-
-        <h2>📩 Contact Us</h2>
-
-        <!-- ✅ Contact Form for EmailJS -->
-        <form id="contact-form">
-            <input type="text" name="from_name" placeholder="Your Name" required>
-            <input type="email" name="from_email" placeholder="Your Email" required>
-            <textarea name="message" placeholder="Your Message" required></textarea>
-            <button type="submit">Send Message</button>
-        </form>
-
-        <div id="success-msg" class="success" style="display: none;">Message sent successfully! ✅</div>
+{% block content %}
+<div class="bg-porcelain min-h-screen pb-24 relative overflow-hidden">
+    <!-- Sophisticated Background Pattern -->
+    <div class="absolute inset-0 z-0 opacity-5 pointer-events-none">
+        <div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(#1B4332_1px,transparent_1px)] [background-size:48px_48px]"></div>
     </div>
 
-    <!-- ✅ EmailJS Script -->
-    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-    <script>
-        // Replace this with your actual public key from EmailJS
-        emailjs.init("uRjHxH7a-nri9pGQq");
+    <!-- Hero Section -->
+    <section class="relative pt-20 pb-16 px-6 text-center">
+        <div class="max-w-4xl mx-auto space-y-6">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-forest/5 border border-forest/10 text-forest text-[11px] font-bold uppercase tracking-[0.2em] animate-fade-in">
+                <i class="fas fa-paper-plane"></i> Get in Touch
+            </div>
+            <h1 class="text-5xl md:text-6xl font-extrabold text-forest font-manrope leading-tight">
+                Connect with our <br><span class="text-forest/40 italic">Agronomy Experts.</span>
+            </h1>
+            <p class="text-lg text-forest/60 font-inter max-w-2xl mx-auto leading-relaxed">
+                Whether you're a producer looking to scale or a buyer seeking verified quality, our team is here to facilitate your success in the digital ecosystem.
+            </p>
+        </div>
+    </section>
 
-        document.getElementById("contact-form").addEventListener("submit", function(event) {
-            event.preventDefault();
+    <!-- Main Contact Grid -->
+    <div class="max-w-7xl mx-auto px-6 relative z-10">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+            
+            <!-- Contact Info Sidebar -->
+            <div class="lg:col-span-5 space-y-10 order-2 lg:order-1">
+                <div class="space-y-8">
+                    <h3 class="text-2xl font-bold text-forest font-manrope">Global Operations</h3>
+                    <div class="space-y-6">
+                        <!-- Address -->
+                        <div class="flex gap-6 group">
+                            <div class="w-12 h-12 shrink-0 rounded-2xl bg-forest/5 flex items-center justify-center text-forest group-hover:bg-forest group-hover:text-white transition-all duration-300">
+                                <i class="fas fa-location-dot"></i>
+                            </div>
+                            <div class="space-y-1">
+                                <p class="text-xs font-bold text-forest/40 uppercase tracking-widest">Headquarters</p>
+                                <p class="text-forest font-bold">123 Agronomy Plaza, Innovation District<br>New Delhi, India 110001</p>
+                            </div>
+                        </div>
 
-            emailjs.sendForm("service_0mo6veo", "template_9u2qpk9", this)
-                .then(function(response) {
-                    console.log("SUCCESS!", response.status, response.text);
-                    document.getElementById("success-msg").style.display = "block";
-                    document.getElementById("contact-form").reset();
-                }, function(error) {
-                    alert("❌ Message failed: " + JSON.stringify(error));
+                        <!-- Phone -->
+                        <div class="flex gap-6 group">
+                            <div class="w-12 h-12 shrink-0 rounded-2xl bg-forest/5 flex items-center justify-center text-forest group-hover:bg-forest group-hover:text-white transition-all duration-300">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="space-y-1">
+                                <p class="text-xs font-bold text-forest/40 uppercase tracking-widest">Phone Support</p>
+                                <p class="text-forest font-bold">+91 800-AGRO-SUITE</p>
+                                <p class="text-xs text-forest/40 italic">Mon - Fri, 9:00 AM - 6:00 PM IST</p>
+                            </div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="flex gap-6 group">
+                            <div class="w-12 h-12 shrink-0 rounded-2xl bg-forest/5 flex items-center justify-center text-forest group-hover:bg-forest group-hover:text-white transition-all duration-300">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="space-y-1">
+                                <p class="text-xs font-bold text-forest/40 uppercase tracking-widest">Direct Email</p>
+                                <p class="text-forest font-bold">support@farmdirect.ai</p>
+                                <p class="text-forest/60">partnerships@farmdirect.ai</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Connect Socials -->
+                <div class="p-8 glass-card !bg-white/40 space-y-6">
+                    <p class="text-sm font-bold text-forest uppercase tracking-widest">Connect with Us</p>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-10 h-10 rounded-xl bg-white border border-forest/10 flex items-center justify-center text-forest hover:bg-forest hover:text-white transition-all shadow-sm">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-xl bg-white border border-forest/10 flex items-center justify-center text-forest hover:bg-forest hover:text-white transition-all shadow-sm">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-xl bg-white border border-forest/10 flex items-center justify-center text-forest hover:bg-forest hover:text-white transition-all shadow-sm">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Form Card -->
+            <div class="lg:col-span-7 order-1 lg:order-2">
+                <div class="glass-card !bg-white/70 p-8 md:p-12 shadow-2xl shadow-forest/5 relative">
+                    <!-- Accent Decor -->
+                    <div class="absolute -top-12 -right-12 w-48 h-48 bg-forest/5 rounded-full blur-3xl pointer-events-none"></div>
+                    
+                    <form id="contact-form" class="space-y-8 relative z-10">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <!-- Name -->
+                            <div class="space-y-2 group">
+                                <label class="text-[10px] font-bold text-forest uppercase tracking-widest flex items-center gap-2">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-forest/20 group-focus-within:bg-forest transition-colors"></span>
+                                    Your Full Name
+                                </label>
+                                <input type="text" name="from_name" placeholder="John Doe" required
+                                    class="w-full bg-white/50 border border-forest/10 rounded-xl px-5 py-4 text-forest focus:ring-2 focus:ring-forest focus:bg-white transition-all outline-none font-bold placeholder:text-forest/30 shadow-inner">
+                            </div>
+                            
+                            <!-- Email -->
+                            <div class="space-y-2 group">
+                                <label class="text-[10px] font-bold text-forest uppercase tracking-widest flex items-center gap-2">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-forest/20 group-focus-within:bg-forest transition-colors"></span>
+                                    Email Address
+                                </label>
+                                <input type="email" name="from_email" placeholder="john@example.com" required
+                                    class="w-full bg-white/50 border border-forest/10 rounded-xl px-5 py-4 text-forest focus:ring-2 focus:ring-forest focus:bg-white transition-all outline-none font-bold placeholder:text-forest/30 shadow-inner">
+                            </div>
+                        </div>
+
+                        <!-- Message -->
+                        <div class="space-y-2 group">
+                            <label class="text-[10px] font-bold text-forest uppercase tracking-widest flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-forest/20 group-focus-within:bg-forest transition-colors"></span>
+                                Message Details
+                            </label>
+                            <textarea name="message" placeholder="How can our agronomy team help you today?" required
+                                class="w-full bg-white/50 border border-forest/10 rounded-xl px-5 py-4 text-forest focus:ring-2 focus:ring-forest focus:bg-white transition-all outline-none font-bold placeholder:text-forest/30 shadow-inner min-h-[160px] resize-none"></textarea>
+                        </div>
+
+                        <div class="pt-4">
+                            <button type="submit" id="submit-btn" class="w-full btn-primary !py-5 flex items-center justify-center gap-4 text-lg group overflow-hidden relative">
+                                <span class="relative z-10 flex items-center gap-3">
+                                    Initialise Transmission <i class="fas fa-arrow-right group-hover:translate-x-2 transition-transform"></i>
+                                </span>
+                                <!-- Subtle shining effect -->
+                                <div class="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-12"></div>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    @keyframes fade-in {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+        animation: fade-in 0.8s ease-out forwards;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById("contact-form").addEventListener("submit", function(event) {
+        event.preventDefault();
+        const btn = document.getElementById("submit-btn");
+        const originalText = btn.innerHTML;
+        
+        // Visual feedback
+        btn.innerHTML = '<span class="flex items-center gap-3"><i class="fas fa-circle-notch animate-spin"></i> Processing...</span>';
+        btn.disabled = true;
+
+        emailjs.sendForm("service_0mo6veo", "template_9u2qpk9", this)
+            .then(function(response) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Transmission Successful',
+                    text: 'Our team has received your message and will respond within 24 standard operating hours.',
+                    confirmButtonColor: '#1B4332',
+                    borderRadius: '16px'
                 });
-        });
-    </script>
-</body>
-</html>
+                document.getElementById("contact-form").reset();
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }, function(error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Transmission Failed',
+                    text: 'An error occurred while communicating with the server. Please try again later.',
+                    confirmButtonColor: '#BC4749'
+                });
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            });
+    });
+</script>
+{% endblock %}

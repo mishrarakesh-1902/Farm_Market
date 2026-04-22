@@ -1,176 +1,202 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Crop Prediction | Farm Market</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(to right, #e6ffe6, #ffffff);
-            margin: 0;
-            padding: 40px 20px;
-        }
+{% extends "base.html" %}
+{% load static %}
 
-        .container {
-            max-width: 600px;
-            margin: auto;
-            background-color: white;
-            padding: 40px 30px;
-            border-radius: 15px;
-            box-shadow: 0 8px 30px rgba(0, 128, 0, 0.2);
-            animation: fadeInUp 1s ease-in-out;
-        }
+{% block title %}Intelligence | AI Crop Prediction{% endblock %}
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+{% block content %}
+<div class="bg-porcelain min-h-screen pt-12 pb-24 relative overflow-hidden">
+    <!-- Tech Background Elements -->
+    <div class="absolute inset-0 z-0 opacity-5 pointer-events-none">
+        <div class="absolute top-0 right-0 w-full h-full bg-[radial-gradient(#1B4332_1px,transparent_1px)] [background-size:40px_40px]"></div>
+    </div>
 
-        h2 {
-            text-align: center;
-            color: #2e7d32;
-            margin-bottom: 30px;
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        input[type="number"] {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            outline: none;
-            transition: all 0.3s ease;
-            font-size: 15px;
-        }
-
-        input:focus {
-            border-color: #66bb6a;
-            box-shadow: 0 0 8px rgba(76, 175, 80, 0.2);
-        }
-
-        label {
-            font-weight: bold;
-            color: #2e7d32;
-        }
-
-        button {
-            background-color: #2e7d32;
-            color: white;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #1b5e20;
-        }
-
-        .result {
-            text-align: center;
-            margin-top: 30px;
-            font-size: 18px;
-            color: #2e7d32;
-        }
-
-        .input-summary {
-            background: #f0f8f0;
-            border: 1px solid #c8e6c9;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
-        }
-
-        .input-summary h4 {
-            margin-bottom: 10px;
-            color: #1b5e20;
-        }
-
-        .input-summary p {
-            margin: 5px 0;
-        }
-
-        /* Home button style */
-        .home-button {
-            text-align: right;
-            margin-bottom: 20px;
-        }
-
-        .home-button a {
-            background-color: #2e7d32;
-            color: white;
-            padding: 10px 18px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: bold;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-            transition: background-color 0.3s ease;
-        }
-
-        .home-button a:hover {
-            background-color: #1b5e20;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-
-        <!-- 🏠 Home Button -->
-        <div class="home-button">
-        {% if user.is_authenticated %}
-        {% if user.userprofile.role == "farmer" %}
-            <a href="{% url 'farmer_dashboard' %}">🏠 Home</a>
-        {% elif user.userprofile.role == "buyer" %}
-            <a href="{% url 'buyer_dashboard' %}">🏠 Home</a>
-        {% else %}
-            <a href="{% url 'home' %}">🏠 Home</a>
-        {% endif %}
-        {% else %}
-            <a href="{% url 'home' %}">🏠 Home</a>
-        {% endif %}
+    <div class="max-w-4xl mx-auto px-6 relative z-10">
+        <!-- Breadcrumb -->
+        <div class="mb-8">
+            <a href="{% url 'ai_intelligence_hub' %}" class="inline-flex items-center gap-2 text-forest/40 hover:text-forest font-bold text-[10px] uppercase tracking-widest transition-colors group">
+                <i class="fas fa-arrow-left group-hover:-translate-x-1 transition-transform"></i>
+                Back to Intelligence Suite
+            </a>
+        </div>
+        <!-- Header -->
+        <div class="text-center mb-12 space-y-4">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-forest/5 border border-forest/10 text-forest text-[10px] font-bold uppercase tracking-[0.2em]">
+                <i class="fas fa-microchip animate-pulse"></i> Neural Core Active
+            </div>
+            <h1 class="text-4xl md:text-5xl font-extrabold text-forest font-manrope tracking-tight">Intelligence <span class="text-white/40">Suite.</span></h1>
+            <p class="text-forest/50 font-medium font-inter max-w-lg mx-auto">Input multi-spectral soil metrics to generate high-precision crop recommendations.</p>
         </div>
 
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+            <!-- Form Side -->
+            <div class="md:col-span-12">
+                <div class="glass-card p-8 md:p-12 bg-white shadow-2xl shadow-forest/5">
+                    <form method="post" class="space-y-8" id="predictionForm">
+                        {% csrf_token %}
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {% for field in form %}
+                            <div class="space-y-2 group">
+                                <label class="text-[10px] font-bold text-forest uppercase tracking-widest flex items-center gap-2">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-terracotta/40 group-focus-within:bg-terracotta transition-colors"></span>
+                                    {{ field.label }}
+                                </label>
+                                {{ field }}
+                                {% if field.errors %}
+                                <p class="text-[10px] text-red-500 font-bold px-2">{{ field.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
 
-        <h2>🌾 Predict Best Crop for Your Soil</h2>
-
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-             
-            <div style="text-align: center;">
-                <button type="submit">🚀 Predict Crop</button>
+                        <div class="pt-8 border-t border-forest/5 text-center">
+                            <button type="submit" class="btn-primary !px-12 !py-5 flex items-center justify-center gap-4 mx-auto text-lg group">
+                                <span>Initialize Neural Synthesis</span>
+                                <i class="fas fa-atom group-hover:rotate-180 transition-transform duration-700"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-        </form>
 
-        {% if result %}
-            <div class="result">
-                <h3>🌱 Recommended Crop: <strong>{{ result }}</strong></h3>
-            </div>
+            <!-- Result Overlay (if exists) -->
+            {% if result %}
+            <div class="md:col-span-12 mt-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
+                <div class="glass-card !bg-forest p-8 md:p-12 text-white relative overflow-hidden group">
+                    <!-- Background Decor -->
+                    <div class="absolute -bottom-12 -right-12 text-[180px] text-white opacity-[0.03] group-hover:rotate-12 transition-transform duration-1000">
+                        <i class="fas fa-leaf"></i>
+                    </div>
 
-            <div class="input-summary">
-                <h4>🔍 Entered Soil and Climate Values:</h4>
-                <p><strong>Nitrogen:</strong> {{ input_values.nitrogen }}%</p>
-                <p><strong>Phosphorus:</strong> {{ input_values.phosphorus }}%</p>
-                <p><strong>Potassium:</strong> {{ input_values.potassium }}%</p>
-                <p><strong>pH Level:</strong> {{ input_values.pH }}</p>
-                <p><strong>Temperature:</strong> {{ input_values.temperature }} °C</p>
-                <p><strong>Humidity:</strong> {{ input_values.humidity }}%</p>
-                <p><strong>Rainfall:</strong> {{ input_values.rainfall }} mm</p>
+                    <div class="relative z-10 space-y-10">
+                        <!-- Hero Section -->
+                        <div class="text-center space-y-6">
+                            <div class="w-20 h-20 rounded-full bg-white/10 flex items-center justify-center mx-auto backdrop-blur-xl border border-white/20">
+                                <i class="fas fa-seedling text-3xl text-white"></i>
+                            </div>
+                            
+                            <div class="space-y-1">
+                                <p class="text-emerald-400/80 font-bold uppercase tracking-[0.3em] text-[10px]">Optimal Recommendation</p>
+                                <h2 class="text-5xl md:text-7xl font-extrabold font-manrope italic tracking-tighter">{{ result|upper }}</h2>
+                            </div>
+                        </div>
+
+                        <!-- Statistical Pillars -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto py-6 border-y border-white/10">
+                            <div class="text-center">
+                                <p class="text-white/30 text-[9px] font-bold uppercase mb-1">Confidence</p>
+                                <p class="text-xl font-extrabold text-emerald-400">{{ best_confidence }}%</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-white/30 text-[9px] font-bold uppercase mb-1">Yield Outlook</p>
+                                <p class="text-xl font-extrabold">High</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-white/30 text-[9px] font-bold uppercase mb-1">Risk Factor</p>
+                                <p class="text-xl font-extrabold text-terracotta/80">Low</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-white/30 text-[9px] font-bold uppercase mb-1">Market Pulse</p>
+                                <p class="text-xl font-extrabold">Rising</p>
+                            </div>
+                        </div>
+
+                        <!-- Analytical Breakdown (Terminal Style) -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+                            <!-- Input Profile -->
+                            <div class="bg-black/20 rounded-2xl p-6 border border-white/5 font-mono relative group/terminal">
+                                <div class="flex items-center justify-between mb-4 pb-2 border-b border-white/10">
+                                    <span class="text-[10px] text-emerald-400/60 font-bold uppercase tracking-widest flex items-center gap-2">
+                                        <i class="fas fa-microchip text-[8px]"></i> Soil Analysis Profile
+                                    </span>
+                                    <div class="flex gap-1.5">
+                                        <div class="w-1.5 h-1.5 rounded-full bg-red-400/30"></div>
+                                        <div class="w-1.5 h-1.5 rounded-full bg-amber-400/30"></div>
+                                        <div class="w-1.5 h-1.5 rounded-full bg-emerald-400/30"></div>
+                                    </div>
+                                </div>
+                                <div class="space-y-2 text-[11px]">
+                                    <div class="flex justify-between border-b border-white/5 pb-1">
+                                        <span class="text-white/40">Nitrogen (N)</span>
+                                        <span class="text-white/90 font-bold">{{ input_values.nitrogen }} <span class="text-[9px] opacity-40">kg/ha</span></span>
+                                    </div>
+                                    <div class="flex justify-between border-b border-white/5 pb-1">
+                                        <span class="text-white/40">Phosphorus (P)</span>
+                                        <span class="text-white/90 font-bold">{{ input_values.phosphorus }} <span class="text-[9px] opacity-40">kg/ha</span></span>
+                                    </div>
+                                    <div class="flex justify-between border-b border-white/5 pb-1">
+                                        <span class="text-white/40">Potassium (K)</span>
+                                        <span class="text-white/90 font-bold">{{ input_values.potassium }} <span class="text-[9px] opacity-40">kg/ha</span></span>
+                                    </div>
+                                    <div class="flex justify-between border-b border-white/5 pb-1">
+                                        <span class="text-white/40">Soil pH</span>
+                                        <span class="text-white/90 font-bold">{{ input_values.pH }}</span>
+                                    </div>
+                                    <div class="flex justify-between border-b border-white/5 pb-1">
+                                        <span class="text-white/40">Temperature</span>
+                                        <span class="text-white/90 font-bold">{{ input_values.temperature|default:"--" }} <span class="text-[9px] opacity-40">°C</span></span>
+                                    </div>
+                                    <div class="flex justify-between border-b border-white/5 pb-1">
+                                        <span class="text-white/40">Humidity</span>
+                                        <span class="text-white/90 font-bold">{{ input_values.humidity|default:"--" }} <span class="text-[9px] opacity-40">%</span></span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-white/40">Rainfall</span>
+                                        <span class="text-white/90 font-bold">{{ input_values.rainfall|default:"--" }} <span class="text-[9px] opacity-40">mm</span></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Probability Leadboard -->
+                            <div class="bg-black/20 rounded-2xl p-6 border border-white/5 relative">
+                                <span class="text-[10px] text-emerald-400/60 font-bold uppercase tracking-widest flex items-center gap-2 mb-6">
+                                    <i class="fas fa-list-ol text-[8px]"></i> Top Recommendations
+                                </span>
+                                <div class="space-y-5">
+                                    {% for rec in top_recommendations %}
+                                    <div class="relative space-y-2">
+                                        <div class="flex justify-between items-end">
+                                            <span class="text-xs font-bold {% if forloop.first %}text-emerald-400 text-sm{% else %}text-white/60{% endif %}">
+                                                {% if forloop.first %}🏆{% endif %} {{ rec.name }}
+                                            </span>
+                                            <span class="text-[10px] font-mono text-white/40">{{ rec.confidence }}% Match</span>
+                                        </div>
+                                        <div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                                            <div class="h-full {% if forloop.first %}bg-emerald-400{% else %}bg-emerald-400/30{% endif %} rounded-full transition-all duration-1000 ease-out" 
+                                                 style="width: {{ rec.confidence }}%"></div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-8 text-center">
+                            <a href="{% url 'predict_crop' %}" class="inline-flex items-center gap-3 text-white/40 font-bold text-[10px] uppercase tracking-[0.2em] hover:text-white transition-colors group">
+                                <i class="fas fa-sync-alt group-hover:rotate-180 transition-transform duration-500"></i> New Neural Synthesis
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
-        {% endif %}
+            {% endif %}
+        </div>
     </div>
-</body>
-</html>
+</div>
+
+<style>
+    /* Styling injected fields */
+    #predictionForm input {
+        @apply w-full bg-forest/5 border border-forest/10 rounded-xl px-4 py-3 text-forest focus:ring-2 focus:ring-forest focus:bg-white transition-all outline-none font-bold text-sm;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const inputs = document.querySelectorAll('#predictionForm input');
+        inputs.forEach(input => {
+            input.classList.add('w-full', 'bg-forest/5', 'border', 'border-forest/10', 'rounded-xl', 'px-4', 'py-3', 'text-forest', 'focus:ring-2', 'focus:ring-forest', 'focus:bg-white', 'transition-all', 'outline-none', 'font-bold', 'text-sm');
+        });
+    });
+</script>
+{% endblock %}

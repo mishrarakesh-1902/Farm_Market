@@ -1,479 +1,152 @@
-<!-- {% for product in products %}
-<div class="col-md-4">
-    <div class="card mb-4 shadow-sm">
-        <img src="{{ product.image.url }}"  class="card-img-top" alt="{{ product.name }}">
-        <div class="card-body">
-            <h5 class="card-title">{{ product.name }}</h5>
-            <p class="card-text">{{ product.description|truncatewords:15 }}</p>
-            <p><strong>Price:</strong> ₹{{ product.price_per_unit }}</p>
-            <a href="{% url 'product_detail' product.pk %}" class="btn btn-primary">View Details</a>
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Explore Produce | FarmDirect Marketplace{% endblock %}
+
+{% block content %}
+<div class="bg-porcelain min-h-screen pb-24">
+    <!-- Marketplace Header -->
+    <section class="bg-forest pt-12 pb-24 px-6 relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute translate-y-20 -translate-x-20 w-96 h-96 rounded-full bg-white blur-3xl"></div>
         </div>
-    </div>
-</div>
-{% endfor %} -->
+        
+        <div class="max-w-7xl mx-auto relative z-10 text-center space-y-4">
+            <h1 class="text-4xl md:text-6xl font-extrabold text-white font-manrope tracking-tight">Marketplace Core.</h1>
+            <p class="text-white/60 font-inter max-w-xl mx-auto">Discover high-yield organic produce directly from verified regional farm terminals.</p>
+        </div>
+    </section>
 
-
-<!-- templates/product_list.html -->
-<!-- templates/product_list.html -->
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Product List</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-image: url('https://plus.unsplash.com/premium_photo-1661907005604-cec7ffb6a042?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); /* agriculture image */
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            background-position: center;    
-        }
-
-        .overlay {
-            /* background-color: rgba(255, 255, 255, 0.714); */
-            min-height: 100vh;
-            padding-top: 40px;
-            padding-bottom: 40px;
-        }
-
-        .card-img-top {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .card-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-        }
-
-        .card-text {
-            color: #555;
-            font-size: 0.95rem;
-        }
-
-        .btn-view {
-            background-color: #28a745;
-            border: none;
-        }
-
-        .btn-view:hover {
-            background-color: #218838;
-        }
-
-        h2 {
-            font-weight: bold;
-            color: #2e7d32;
-        }
-    </style>
-</head>
-<body>
-    <div class="overlay">
-        <div class="container">
-            <h2 class="text-center mb-5">Explore Fresh Farm Products</h2>
-            <div class="row g-4">
-                {% for product in products %}
-                    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                        <div class="card h-100 shadow-sm">
-                            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
-                            <div class="card-body d-flex flex-column">
-                                <h5 class="card-title">{{ product.name }}</h5>
-                                <p class="card-text mb-2">{{ product.description|truncatewords:15 }}</p>
-                                <p class="mb-3"><strong>Price:</strong> ₹{{ product.price_per_unit }}</p>
-                                <a href="{% url 'product_detail' product.pk %}" class="btn btn-view mt-auto text-white">View Details</a>
-                            </div>
-                        </div>
-                    </div>
-                {% empty %}
-                    <p class="text-center">No products available.</p>
-                {% endfor %}
+    <!-- Search & Filter Bar -->
+    <div class="max-w-7xl mx-auto px-6 -mt-12 relative z-20">
+        <div class="glass-card !bg-white/80 p-4 md:p-6 flex flex-col md:flex-row gap-4 items-center">
+            <form method="get" class="flex-grow flex gap-2 w-full">
+                <div class="relative flex-grow group">
+                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-forest/30 group-focus-within:text-forest transition-colors"></i>
+                    <input type="text" name="q" value="{{ request.GET.q }}" placeholder="Search produce, farmer IDs, or grain types..." 
+                           class="w-full bg-forest/5 border border-forest/10 rounded-xl pl-12 pr-4 py-3 text-forest focus:ring-2 focus:ring-forest focus:bg-white transition-all outline-none">
+                </div>
+                <button type="submit" class="btn-primary !px-6 !py-3 whitespace-nowrap">
+                    Search Pulse
+                </button>
+            </form>
+            
+            <div class="flex items-center gap-3 w-full md:w-auto">
+                <button class="flex-1 md:flex-none px-6 py-3 bg-white border border-forest/10 rounded-xl font-bold text-forest text-sm flex items-center justify-center gap-2 hover:bg-forest/5 transition-colors">
+                    <i class="fas fa-sliders text-xs"></i> Filters
+                </button>
+                <a href="{% url 'cart' %}" class="flex-1 md:flex-none px-6 py-3 bg-forest/10 border border-forest/10 rounded-xl font-bold text-forest text-sm flex items-center justify-center gap-2 hover:bg-forest/20 transition-colors">
+                    <i class="fas fa-shopping-cart text-xs"></i> Tray
+                </a>
             </div>
         </div>
     </div>
-</body>
-</html> -->
 
+    <!-- Product Grid -->
+    <section class="max-w-7xl mx-auto px-6 mt-16">
+        <div class="flex items-center justify-between mb-10">
+            <div class="flex items-center gap-4">
+                <div class="h-8 w-1.5 bg-terracotta rounded-full"></div>
+                <h2 class="text-2xl font-extrabold text-forest font-manrope">Live Listings</h2>
+            </div>
+            <p class="text-xs font-bold text-forest/30 uppercase tracking-widest">{{ products.count }} Units Available</p>
+        </div>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Product List</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet"> <!-- AOS for animations -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> <!-- Font Awesome -->
-
-    <style>
-        body {
-            background-color: #f5fdf4;
-            min-height: 100vh;
-            padding-top: 40px;
-            padding-bottom: 40px;
-        }
-
-        .agri-card {
-            border-radius: 25px;
-            border: 2px solid #a5d6a7;
-            background-color: #ffffff;
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .agri-card:hover {
-            transform: scale(1.02);
-            box-shadow: 0 10px 25px rgba(76, 175, 80, 0.2);
-        }
-
-        .card-img-top {
-            height: 200px;
-            object-fit: cover;
-            border-bottom: 1px solid #c8e6c9;
-        }
-
-        .card-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #2e7d32;
-        }
-
-        .card-text {
-            color: #555;
-            font-size: 0.95rem;
-        }
-
-        .btn-view {
-            background-color: #4caf50;
-            border: none;
-        }
-
-        .btn-view:hover {
-            background-color: #388e3c;
-        }
-
-        .btn-buy {
-            background-color: #ff9800;
-            border: none;
-            margin-left: 5px;
-        }
-
-        .btn-buy:hover {
-            background-color: #e68900;
-        }
-
-        h2 {
-            font-weight: bold;
-            color: #2e7d32;
-        }
-
-        .leaf-icon {
-            position: absolute;
-            width: 35px;
-            height: 35px;
-            opacity: 0.3;
-        }
-
-        .leaf-top-left {
-            top: 10px;
-            left: 10px;
-            transform: rotate(-30deg);
-        }
-
-        .leaf-bottom-right {
-            bottom: 10px;
-            right: 10px;
-            transform: rotate(45deg);
-        }
-
-        .home-button {
-            text-align: right;
-            margin-bottom: 20px;
-        }
-
-        .home-button a {
-            background-color: #2e7d32;
-            color: white;
-            padding: 10px 18px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: bold;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-            transition: background-color 0.3s ease;
-        }
-
-        .home-button a:hover {
-            background-color: #1b5e20;
-        }
-
-        .search-bar {
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .search-input {
-            max-width: 400px;
-            width: 100%;
-        }
-
-        /* ========== FOOTER STYLES ========== */
-        footer {
-            background: linear-gradient(135deg, #2e8b57 0%, #1e5c3f 100%);
-            color: #fff;
-            padding: 60px 30px 30px;
-            margin-top: 80px;
-            border-top: 2px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 40px;
-            margin-bottom: 40px;
-        }
-
-        .footer-section h4 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .footer-section h4 i {
-            font-size: 1.3rem;
-            color: #a8e6c9;
-        }
-
-        .footer-section ul {
-            list-style: none;
-        }
-
-        .footer-section ul li {
-            margin-bottom: 12px;
-        }
-
-        .footer-section ul li a {
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.95rem;
-        }
-
-        .footer-section ul li a:hover {
-            color: #a8e6c9;
-            transform: translateX(5px);
-        }
-
-        .footer-section p {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.95rem;
-            line-height: 1.6;
-        }
-
-        .social-links {
-            display: flex;
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .social-links a {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            color: white;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            font-size: 1.1rem;
-        }
-
-        .social-links a:hover {
-            background: #a8e6c9;
-            color: #1e5c3f;
-            transform: translateY(-3px);
-        }
-
-        .footer-bottom {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding-top: 30px;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-
-        .footer-bottom p {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.9rem;
-            margin: 0;
-        }
-
-        .footer-links-bottom {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        .footer-links-bottom a {
-            color: rgba(255, 255, 255, 0.7);
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-        }
-
-        .footer-links-bottom a:hover {
-            color: #a8e6c9;
-        }
-
-    </style>
-</head>
-<body>
-    
-    <nav class="navbar navbar-light bg-light mb-4">
-       <div class="container">
-          <div class="home-button">
-          {% if user.is_authenticated %}
-          {% if user.userprofile.role == "farmer" %}
-            <a href="{% url 'farmer_dashboard' %}">🏠 Home</a>
-          {% elif user.userprofile.role == "buyer" %}
-            <a href="{% url 'buyer_dashboard' %}">🏠 Home</a>
-          {% else %}
-            <a href="{% url 'home' %}">🏠 Home</a>
-          {% endif %}
-          {% else %}
-            <a href="{% url 'home' %}">🏠 Home</a>
-          {% endif %}
-          </div>
-          <div class="home-button">
-            <a href="{% url 'cart' %}">🛒 View Cart</a>
-          </div>
-       </div>
-    </nav>
-
-    <div class="container">
-        <h2 class="text-center mb-4">Explore Fresh Farm Products</h2>
-
-        <!-- 🔍 Search Form -->
-        <form method="get" class="search-bar">
-            <input type="text" name="q" value="{{ request.GET.q }}" class="form-control search-input" placeholder="Search by product or farmer name">
-            <button type="submit" class="btn btn-success">Search</button>
-        </form>
-
-        <!-- 🛒 Product Cards -->
-        <div class="row g-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {% for product in products %}
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3" data-aos="fade-up">
-                    <div class="card agri-card h-100 shadow-sm">
-                        <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" class="leaf-icon leaf-top-left" alt="leaf">
-                        <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" class="leaf-icon leaf-bottom-right" alt="leaf">
-
-                        <!-- <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" class="img-fluid"> -->
+            <div class="group relative">
+                <!-- Main Card -->
+                <div class="glass-card h-full transition-all duration-500 group-hover:-translate-y-2 group-hover:shadow-2xl group-hover:shadow-forest/10">
+                    <!-- Image Container -->
+                    <div class="relative h-56 overflow-hidden">
                         {% if product.images.all %}
-                            <img src="{{ product.images.all.0.image.url }}" alt="{{ product.name }}" class="card-img-top">
+                            <img src="{{ product.images.all.0.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                         {% else %}
-                            <img src="https://via.placeholder.com/200x200?text=No+Image" class="card-img-top" alt="No Image">
-                        {% endif %}
-
-                        <!-- <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}"> -->
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title">{{ product.name }}</h5>
-                            <p class="card-text mb-2">{{ product.description|truncatewords:15 }}</p>
-                            <p class="mb-1"><strong>Farmer:</strong> {{ product.seller.username }}</p>
-                            <p class="mb-3"><strong>Price:</strong> ₹{{ product.price_per_unit }}</p>
-                            <div class="d-flex mt-auto" style="gap: 15px;">
-                                <a href="{% url 'product_detail' product.pk %}" class="btn btn-view text-white">View Details</a>
-                                <a href="{% url 'add_to_cart' product.id %}?next={{ request.get_full_path }}" class="btn btn-primary">Add to Cart</a>
-
+                            <div class="w-full h-full bg-forest/5 flex items-center justify-center">
+                                <i class="fas fa-image text-4xl text-forest/10"></i>
                             </div>
+                        {% endif %}
+                        
+                        <!-- Badges -->
+                        <div class="absolute top-4 left-4 flex flex-col gap-2">
+                            <span class="px-3 py-1 bg-forest text-white text-[10px] font-bold uppercase tracking-widest rounded-full shadow-lg">Verified</span>
+                            {% if product.is_organic %}
+                            <span class="px-3 py-1 bg-white text-forest text-[10px] font-bold uppercase tracking-widest rounded-full shadow-lg">100% Organic</span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Quick Action Overlay -->
+                        <div class="absolute inset-0 bg-forest/40 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+                            <a href="{% url 'product_detail' product.pk %}" class="w-12 h-12 rounded-full bg-white text-forest flex items-center justify-center hover:bg-forest hover:text-white transition-all scale-75 group-hover:scale-100 duration-300">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="p-6 space-y-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-[10px] font-bold text-forest/40 uppercase tracking-widest mb-1">{{ product.category|default:"Fresh Produce" }}</p>
+                                <h3 class="text-xl font-bold text-forest group-hover:text-terracotta transition-colors">{{ product.name }}</h3>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xl font-extrabold text-forest italic">₹{{ product.price_per_unit }}</p>
+                                <p class="text-[10px] font-bold text-forest/40 uppercase">per unit</p>
+                            </div>
+                        </div>
+
+                        <p class="text-sm text-forest/60 line-clamp-2 min-h-[40px] font-inter">
+                            {{ product.description }}
+                        </p>
+
+                        <div class="flex items-center gap-3 pt-4 border-t border-forest/5">
+                            <div class="w-8 h-8 rounded-full bg-forest/5 flex items-center justify-center overflow-hidden border border-forest/10">
+                                <i class="fas fa-user text-forest/20 text-xs"></i>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-bold text-forest/40 uppercase leading-none">Farmer</p>
+                                <p class="text-xs font-bold text-forest">{{ product.seller.username }}</p>
+                            </div>
+                            <div class="ml-auto flex items-center gap-1">
+                                <i class="fas fa-star text-terracotta text-[10px]"></i>
+                                <span class="text-[10px] font-bold text-forest">4.8</span>
+                            </div>
+                        </div>
+                        
+                        <div class="pt-2">
+                            <a href="{% url 'add_to_cart' product.id %}?next={{ request.get_full_path }}" class="w-full flex items-center justify-center gap-3 py-3 border-2 border-forest text-forest font-bold rounded-xl hover:bg-forest hover:text-white transition-all">
+                                <i class="fas fa-cart-plus text-sm"></i> Add to Tray
+                            </a>
                         </div>
                     </div>
                 </div>
+            </div>
             {% empty %}
-                <p class="text-center">No products found.</p>
+            <div class="col-span-full py-24 text-center">
+                <div class="w-24 h-24 rounded-full bg-forest/5 flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-search text-3xl text-forest/20"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-forest mb-2">No listings matched.</h3>
+                <p class="text-forest/50">Try adjusting your filters or search keywords for the current market pulse.</p>
+                <a href="{% url 'product_list' %}" class="inline-block mt-8 font-bold text-terracotta hover:underline underline-offset-8 uppercase tracking-widest text-[10px]">Refresh Feed</a>
+            </div>
             {% endfor %}
         </div>
-    </div>
 
-    <!-- AOS scripts -->
-    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
-    <script>
-        AOS.init({ duration: 800, once: true });
-    </script>
-
-    <!-- Footer -->
-    <footer>
-        <div class="footer-content">
-            <!-- About Section -->
-            <div class="footer-section">
-                <h4><i class="fas fa-leaf"></i> Farm Market</h4>
-                <p>Empowering farmers with AI-powered tools for better yields, fair prices, and sustainable farming practices.</p>
-                <div class="social-links">
-                    <a href="#" title="Facebook"><i class="fab fa-facebook"></i></a>
-                    <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
-                    <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
-                    <a href="#" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
-                </div>
+        <!-- Pagination (Placeholder) -->
+        <div class="mt-20 flex justify-center items-center gap-4">
+            <button class="w-12 h-12 rounded-xl bg-white border border-forest/10 flex items-center justify-center text-forest/30 hover:text-forest transition-colors cursor-not-allowed">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <div class="flex items-center gap-2">
+                <span class="w-10 h-10 rounded-xl bg-forest text-white flex items-center justify-center font-bold text-sm">1</span>
+                <span class="w-10 h-10 rounded-xl bg-white text-forest flex items-center justify-center font-bold text-sm hover:bg-forest/5 transition-colors cursor-pointer">2</span>
             </div>
-
-            <!-- Quick Links -->
-            <div class="footer-section">
-                <h4><i class="fas fa-link"></i> Quick Links</h4>
-                <ul>
-                    <li><a href="{% url 'home' %}"><i class="fas fa-arrow-right-long"></i> Home</a></li>
-                    <li><a href="{% url 'product_list' %}"><i class="fas fa-arrow-right-long"></i> Products</a></li>
-                    <li><a href="{% url 'quality_input_list' %}"><i class="fas fa-arrow-right-long"></i> Quality Inputs</a></li>
-                    <li><a href="{% url 'contact' %}"><i class="fas fa-arrow-right-long"></i> Contact Us</a></li>
-                </ul>
-            </div>
-
-            <!-- Features -->
-            <div class="footer-section">
-                <h4><i class="fas fa-star"></i> Features</h4>
-                <ul>
-                    <li><a href="{% url 'predict_crop' %}"><i class="fas fa-arrow-right-long"></i> AI Predictions</a></li>
-                    <li><a href="{% url 'yeild_predict' %}"><i class="fas fa-arrow-right-long"></i> Yield Forecasting</a></li>
-                    <li><a href="{% url 'product_list' %}"><i class="fas fa-arrow-right-long"></i> Direct Selling</a></li>
-                    <li><a href="{% url 'quality_input_list' %}"><i class="fas fa-arrow-right-long"></i> Buy Inputs</a></li>
-                </ul>
-            </div>
-
-            <!-- Contact Info -->
-            <div class="footer-section">
-                <h4><i class="fas fa-envelope"></i> Get in Touch</h4>
-                <ul>
-                    <li><i class="fas fa-phone" style="color: #a8e6c9;"></i> +91 1234-567-890</li>
-                    <li><i class="fas fa-envelope" style="color: #a8e6c9;"></i> support@farmmarket.com</li>
-                    <li><i class="fas fa-map-location-dot" style="color: #a8e6c9;"></i> India</li>
-                </ul>
-            </div>
+            <button class="w-12 h-12 rounded-xl bg-white border border-forest/10 flex items-center justify-center text-forest hover:bg-forest/5 transition-colors">
+                <i class="fas fa-chevron-right"></i>
+            </button>
         </div>
-
-        <!-- Footer Bottom -->
-        <div class="footer-bottom">
-            <p>&copy; 2025 Farm Market Platform. All rights reserved.</p>
-            <div class="footer-links-bottom">
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms & Conditions</a>
-                <a href="#">Cookie Policy</a>
-            </div>
-        </div>
-    </footer>
-
-</body>
-</html>
+    </section>
+</div>
+{% endblock %}

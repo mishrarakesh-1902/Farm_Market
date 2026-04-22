@@ -11,6 +11,7 @@ Pillow==11.2.1
 requests==2.32.3
 python-json-logger==3.2.1
 whitenoise==6.5.0
+pymysql==1.1.0
 
 # Optional / heavy packages (include only if your app requires ML or image processing)
 # numpy==2.3.2

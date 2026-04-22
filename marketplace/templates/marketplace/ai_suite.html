@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Intelligence | AI Suite Hub{% endblock %}
+
+{% block content %}
+<div class="bg-porcelain min-h-screen pt-12 pb-24 relative overflow-hidden">
+    <!-- Orbital Grid Decor -->
+    <div class="absolute inset-0 z-0 opacity-10 pointer-events-none">
+        <div class="absolute top-0 right-0 w-full h-full bg-[radial-gradient(#1B4332_1px,transparent_1px)] [background-size:60px_60px]"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-porcelain/80 to-porcelain"></div>
+    </div>
+
+    <!-- Animated Data Streams -->
+    <div class="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-forest/20 to-transparent animate-pulse"></div>
+    <div class="absolute top-0 right-1/4 w-px h-full bg-gradient-to-b from-transparent via-forest/20 to-transparent animate-pulse delay-700"></div>
+
+    <div class="max-w-7xl mx-auto px-6 relative z-10">
+        <!-- Header -->
+        <header class="text-center mb-20 space-y-6">
+            <div class="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-forest/5 border border-forest/10 text-forest text-[10px] font-black uppercase tracking-[0.3em]">
+                <span class="relative flex h-2 w-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-forest opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-forest"></span>
+                </span>
+                Neural Network Online
+            </div>
+            <h1 class="text-6xl md:text-7xl font-extrabold text-forest font-manrope tracking-tight leading-none uppercase">
+                Intelligence <br><span class="text-white/40 italic">Suite.</span>
+            </h1>
+            <p class="text-forest/50 font-medium font-inter max-w-2xl mx-auto text-lg">
+                Deploy advanced multi-spectral analysis models to optimize agricultural production, mitigate climatic risk, and maximize field efficiency.
+            </p>
+        </header>
+
+        <!-- Model Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <!-- Model 1: Crop Recommendation -->
+            <div class="group relative">
+                <div class="glass-card !p-0 h-full transition-all duration-500 group-hover:-translate-y-4 group-hover:shadow-[0_45px_90px_-15px_rgba(27,67,50,0.2)] group-hover:border-forest/40">
+                    <div class="p-8 space-y-12">
+                        <div class="flex justify-between items-start">
+                            <div class="w-16 h-16 rounded-2xl bg-forest/5 flex items-center justify-center text-forest group-hover:bg-forest group-hover:text-white transition-all duration-500">
+                                <i class="fas fa-atom text-2xl animate-spin-slow"></i>
+                            </div>
+                            <span class="px-3 py-1 bg-forest/5 rounded-full text-[9px] font-bold text-forest uppercase tracking-widest">v2.4 LTS</span>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <h3 class="text-2xl font-black text-forest tracking-tight">Crop Recommendation</h3>
+                            <p class="text-sm font-medium text-forest/50 font-inter leading-relaxed">
+                                Neural synthesis engine analyzing Nitrogen, Phosphorus, Potassium, and climatic data to recommend the optimal crop for your specific soil profile.
+                            </p>
+                        </div>
+
+                        <div class="pt-8 border-t border-forest/10 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <div class="flex -space-x-2">
+                                    <div class="w-6 h-6 rounded-full bg-forest/10 border border-white"></div>
+                                    <div class="w-6 h-6 rounded-full bg-forest/20 border border-white"></div>
+                                </div>
+                                <span class="text-[9px] font-black text-forest/40 uppercase">8.2M Iterations</span>
+                            </div>
+                            <a href="{% url 'predict_crop' %}" class="btn-primary !px-6 !py-3 !text-xs !tracking-widest uppercase">Deploy Module</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Model 2: Yield Forecasting -->
+            <div class="group relative">
+                <div class="glass-card !p-0 h-full transition-all duration-500 group-hover:-translate-y-4 group-hover:shadow-[0_45px_90px_-15px_rgba(188,71,73,0.15)] border-terracotta/10 group-hover:border-terracotta/40">
+                    <div class="p-8 space-y-12">
+                        <div class="flex justify-between items-start">
+                            <div class="w-16 h-16 rounded-2xl bg-terracotta/5 flex items-center justify-center text-terracotta group-hover:bg-terracotta group-hover:text-white transition-all duration-500">
+                                <i class="fas fa-satellite-dish text-2xl group-hover:scale-110 transition-transform"></i>
+                            </div>
+                            <span class="px-3 py-1 bg-terracotta/5 rounded-full text-[9px] font-bold text-terracotta uppercase tracking-widest">v1.8 Core</span>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <h3 class="text-2xl font-black text-forest tracking-tight">Yield Forecasting</h3>
+                            <p class="text-sm font-medium text-forest/50 font-inter leading-relaxed">
+                                Advanced regression module correlating rainfall, temperature, and pesticide loads to project production volume per hectare with 94.2% precision.
+                            </p>
+                        </div>
+
+                        <div class="pt-8 border-t border-forest/10 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <div class="w-2 h-2 rounded-full bg-terracotta animate-pulse"></div>
+                                <span class="text-[9px] font-black text-forest/40 uppercase">Satellite Sync Active</span>
+                            </div>
+                            <a href="{% url 'yeild_predict' %}" class="btn-primary !bg-terracotta !px-6 !py-3 !text-xs !tracking-widest uppercase hover:!bg-[#9B3B3D]">Deploy Module</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Model 3: Coming Soon / Future -->
+            <div class="group relative opacity-60">
+                <div class="glass-card !p-0 h-full border-dashed border-forest/10 hover:border-forest/20">
+                    <div class="p-8 flex flex-col items-center justify-center h-full text-center space-y-6">
+                        <div class="w-16 h-16 rounded-full bg-forest/5 flex items-center justify-center text-forest/30">
+                            <i class="fas fa-lock text-xl"></i>
+                        </div>
+                        <div class="space-y-2">
+                            <h3 class="text-xl font-bold text-forest/40 tracking-tight">Pest Analytics</h3>
+                            <p class="text-[10px] font-black text-forest/20 uppercase tracking-[0.2em]">R&D Phase: Q4 2026</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Terminal Status -->
+        <footer class="mt-32 max-w-3xl mx-auto">
+            <div class="glass-card !bg-forest p-6 text-white/90">
+                <div class="flex items-center gap-4 mb-4">
+                    <i class="fas fa-terminal text-xs text-terracotta"></i>
+                    <p class="text-[10px] font-black uppercase tracking-[0.3em]">System Telemetry Feed</p>
+                </div>
+                <div class="space-y-2 font-mono text-[10px] opacity-60 leading-relaxed">
+                    <p>> AUTHENTICATION SUCCESSFUL [ADMIN_TIER_01]</p>
+                    <p>> ALL NEURAL NODES RESPONDING IN < 12MS</p>
+                    <p>> SATELLITE HANDSHAKE COMPLETE: INDIAN_SUBCONTINENT_GEOMARKER</p>
+                    <p class="animate-pulse">> AWAITING PILOT INPUT FOR ANALYSIS INITIALIZATION...</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+</div>
+
+<style>
+    @keyframes spin-slow {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    .animate-spin-slow {
+        animation: spin-slow 12s linear infinite;
+    }
+</style>
+{% endblock %}

@@ -1,255 +1,226 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
 <head>
-  <meta charset="UTF-8">
-  <title>Register - Farm Market</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-
-  <style>
-    body, html {
-      margin: 0;
-      height: 100%;
-      font-family: 'Poppins', sans-serif;
-      background: url("{% static 'images/agriculture-bg.jpg' %}") no-repeat center center fixed;
-      background-size: cover;
-    }
-
-    .register-container {
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-      background: rgba(0, 0, 0, 0.4);
-      backdrop-filter: blur(4px);
-    }
-
-    .register-box {
-      background: #fff;
-      padding: 40px 30px;
-      border-radius: 20px;
-      width: 100%;
-      max-width: 500px;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-      animation: fadeIn 0.5s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .form-heading {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    .form-heading i {
-      font-size: 3rem;
-      color: #2e7d32;
-    }
-
-    .form-heading h2 {
-      margin-top: 10px;
-      font-weight: 700;
-      color: #2e7d32;
-    }
-
-    .form-heading p {
-      color: #555;
-      font-size: 0.95rem;
-    }
-
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    .form-group label {
-      font-weight: 600;
-      margin-bottom: 6px;
-      display: block;
-      color: #333;
-    }
-
-    .input-icon-box {
-      display: flex;
-      align-items: center;
-      border: 1.5px solid #ccc;
-      border-radius: 10px;
-      padding: 0 10px;
-      transition: 0.3s;
-    }
-
-    .input-icon-box:focus-within {
-      border-color: #2e7d32;
-      box-shadow: 0 0 0 0.15rem rgba(46, 125, 50, 0.25);
-    }
-
-    .input-icon-box i {
-      margin-right: 10px;
-      color: #2e7d32;
-    }
-
-    .input-icon-box input,
-    .input-icon-box select {
-      border: none;
-      outline: none;
-      flex: 1;
-      padding: 10px;
-      font-size: 0.95rem;
-      border-radius: 10px;
-    }
-
-    .btn-register {
-      background-color: #2e7d32;
-      color: white;
-      font-weight: 600;
-      border: none;
-      border-radius: 10px;
-      padding: 12px;
-      width: 100%;
-      margin-top: 10px;
-      transition: 0.3s ease-in-out;
-    }
-
-    .btn-register:hover {
-      background-color: #1b5e20;
-      transform: scale(1.03);
-      box-shadow: 0 5px 15px rgba(46, 125, 50, 0.3);
-    }
-
-    .errorlist {
-      color: red;
-      font-size: 0.85rem;
-      list-style: none;
-      padding-left: 0;
-      margin-top: -10px;
-      margin-bottom: 10px;
-    }
-
-    .role-fields {
-      display: none;
-      margin-top: 10px;
-    }
-
-    @media (max-width: 576px) {
-      .register-box {
-        padding: 30px 20px;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account | FarmDirect Suite</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Tailwind Play CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'forest': '#1B4332',
+                        'terracotta': '#BC4749',
+                        'porcelain': '#F8F9FA',
+                    },
+                    fontFamily: {
+                        'manrope': ['Manrope', 'sans-serif'],
+                        'inter': ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer components {
+            .input-field {
+                @apply w-full bg-forest/5 border border-forest/10 rounded-xl px-4 py-3 text-forest focus:ring-2 focus:ring-forest focus:bg-white transition-all outline-none;
+            }
+            .btn-primary {
+                @apply w-full bg-forest text-white py-4 rounded-xl font-bold hover:bg-[#0C2118] transition-all transform active:scale-[0.98] shadow-xl shadow-forest/20;
+            }
+            .role-card {
+                @apply relative flex-1 p-4 border-2 border-transparent bg-porcelain rounded-xl cursor-pointer transition-all hover:bg-forest/5;
+            }
+            .role-card.active {
+                @apply border-forest bg-forest/5 shadow-inner shadow-forest/10;
+            }
+        }
+        
+        .role-fields {
+            display: none;
+            animation: slideIn 0.3s ease-out forwards;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
-<body>
+<body class="h-full font-inter bg-porcelain">
 
-<div class="register-container">
-  <div class="register-box">
-    <div class="form-heading">
-      <i class="fas fa-leaf"></i>
-      <h2>Create Your Account</h2>
-      <p>Join Farm Market to buy or sell farm products easily.</p>
+<div class="h-full flex flex-col md:flex-row overflow-hidden">
+    <!-- Left Panel: Graphic & Content (Same as Login) -->
+    <div class="hidden md:flex md:w-[45%] relative items-center justify-center p-12 order-last md:order-first">
+        <div class="absolute inset-0 z-0">
+            <img src="{% static 'images/auth_banner.png' %}" alt="Join the Movement" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-b from-forest/90 via-forest/40 to-transparent"></div>
+        </div>
+
+        <div class="relative z-10 max-w-lg text-white">
+            <h1 class="text-4xl font-extrabold font-manrope leading-tight mb-6">
+                Build the Future <br>of <span class="text-white/60">Digital Agriculture.</span>
+            </h1>
+            <ul class="space-y-6">
+                <li class="flex items-start gap-4">
+                    <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                        <i class="fas fa-check text-xs"></i>
+                    </div>
+                    <div>
+                        <p class="font-bold">Direct Market Access</p>
+                        <p class="text-sm text-white/50">Sell directly to retailers and reduce middleman waste.</p>
+                    </div>
+                </li>
+                <li class="flex items-start gap-4">
+                    <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                        <i class="fas fa-check text-xs"></i>
+                    </div>
+                    <div>
+                        <p class="font-bold">Real-time Analytics</p>
+                        <p class="text-sm text-white/50">Access price trends and yield forecasts powered by AI.</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
     </div>
 
-    <form method="POST" novalidate>
-      {% csrf_token %}
+    <!-- Right Panel: Registration Form -->
+    <div class="flex-grow flex items-center justify-center p-6 md:p-12 lg:p-16 bg-white overflow-y-auto">
+        <div class="w-full max-w-[520px] py-12">
+            <div class="mb-10 text-center md:text-left">
+                <a href="{% url 'home' %}" class="inline-flex items-center gap-3 mb-6 group md:hidden">
+                    <div class="bg-forest rounded-xl p-2 transition-transform group-hover:rotate-12">
+                        <i class="fas fa-leaf text-white text-xl"></i>
+                    </div>
+                    <span class="font-manrope font-extrabold text-2xl tracking-tighter text-forest">FarmDirect</span>
+                </a>
+                <h2 class="text-3xl font-extrabold font-manrope text-forest mb-2">Request Access.</h2>
+                <p class="text-forest/50 font-medium text-sm">Join a global network of smart farmers and verified buyers.</p>
+            </div>
 
-      <!-- User Fields -->
-      {% for field in user_form %}
-        <div class="form-group">
-          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-          <div class="input-icon-box">
-            {% if field.name == 'username' %}
-              <i class="fas fa-user"></i>
-            {% elif field.name == 'email' %}
-              <i class="fas fa-envelope"></i>
-            {% elif field.name == 'password' or field.name == 'confirm_password' %}
-              <i class="fas fa-lock"></i>
-            {% endif %}
-            {{ field }}
-          </div>
-          {{ field.errors }}
-        </div>
-      {% endfor %}
+            <form method="POST" class="space-y-6" id="regForm">
+                {% csrf_token %}
+                
+                {% if user_form.errors or buyer_phone_error or farm_location_error %}
+                <div class="p-4 rounded-xl bg-red-50 border border-red-100 text-red-600 text-sm font-bold">
+                    Please correct the errors flagged below to continue.
+                </div>
+                {% endif %}
 
-      <!-- Role Selection -->
-      <div class="form-group">
-        <label for="role">Register As</label>
-        <div class="input-icon-box">
-          <i class="fas fa-user-tag"></i>
-          <select name="role" id="role" class="form-select" required>
-            <option value="">Select Role --</option>
-            <option value="farmer">Farmer</option>
-            <option value="buyer">Buyer</option>
-          </select>
-        </div>
-      </div>
+                <!-- Basic Info Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="space-y-1.5">
+                        <label class="text-[10px] font-bold text-forest uppercase tracking-widest ml-1">Terminal ID (Username)</label>
+                        {{ user_form.username }}
+                        <div class="text-[10px] text-red-500 font-bold px-1 mt-1">{{ user_form.username.errors }}</div>
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="text-[10px] font-bold text-forest uppercase tracking-widest ml-1">Secure Email</label>
+                        {{ user_form.email }}
+                        <div class="text-[10px] text-red-500 font-bold px-1 mt-1">{{ user_form.email.errors }}</div>
+                    </div>
+                </div>
 
-      <!-- Buyer Fields -->
-      <div id="buyer-fields" class="role-fields">
-        <div class="form-group">
-          <label for="buyer_phone">Phone Number</label>
-          <div class="input-icon-box">
-            <i class="fas fa-phone"></i>
-            <input type="text" name="buyer_phone" id="buyer_phone" class="form-control" />
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="buyer_address">Address</label>
-          <div class="input-icon-box">
-            <i class="fas fa-map-marker-alt"></i>
-            <input type="text" name="buyer_address" id="buyer_address" class="form-control" />
-          </div>
-        </div>
-      </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="space-y-1.5">
+                        <label class="text-[10px] font-bold text-forest uppercase tracking-widest ml-1">Access Key</label>
+                        {{ user_form.password }}
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="text-[10px] font-bold text-forest uppercase tracking-widest ml-1">Confirm Key</label>
+                        {{ user_form.confirm_password }}
+                    </div>
+                </div>
 
-      <!-- Farmer Fields -->
-      <div id="farmer-fields" class="role-fields">
-        <div class="form-group">
-          <label for="farm_location">Farm Location</label>
-          <div class="input-icon-box">
-            <i class="fas fa-tractor"></i>
-            <input type="text" name="farm_location" id="farm_location" class="form-control" />
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="experience">Experience (Years)</label>
-          <div class="input-icon-box">
-            <i class="fas fa-briefcase"></i>
-            <input type="number" name="experience" id="experience" class="form-control" />
-          </div>
-        </div>
-      </div>
+                <!-- Role Selection UI -->
+                <div class="space-y-4">
+                    <label class="text-[10px] font-bold text-forest uppercase tracking-widest ml-1">Primary Role</label>
+                    <div class="flex gap-4">
+                        <div id="role-farmer" class="role-card flex flex-col items-center gap-2 group transition-all" onclick="selectRole('farmer')">
+                            <div class="w-10 h-10 rounded-full bg-forest/5 flex items-center justify-center text-forest group-hover:bg-white transition-colors">
+                                <i class="fas fa-tractor"></i>
+                            </div>
+                            <span class="text-xs font-bold text-forest">Farmer</span>
+                        </div>
+                        <div id="role-buyer" class="role-card flex flex-col items-center gap-2 group transition-all" onclick="selectRole('buyer')">
+                            <div class="w-10 h-10 rounded-full bg-forest/5 flex items-center justify-center text-forest group-hover:bg-white transition-colors">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                            <span class="text-xs font-bold text-forest">Buyer</span>
+                        </div>
+                    </div>
+                    <input type="hidden" name="role" id="role-input" required>
+                </div>
 
-      <button type="submit" class="btn btn-register">Register</button>
-    </form>
-  </div>
+                <!-- Sub-fields (Dynamic) -->
+                <div id="farmer-fields" class="role-fields space-y-4">
+                    <div class="space-y-1.5">
+                        <label class="text-[10px] font-bold text-forest uppercase tracking-widest ml-1">Geo Location (Farm)</label>
+                        <input type="text" name="farm_location" class="input-field" placeholder="e.g. Nashik, MH District 04">
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="text-[10px] font-bold text-forest uppercase tracking-widest ml-1">Operative Experience (Years)</label>
+                        <input type="number" name="experience" class="input-field" placeholder="Number of years">
+                    </div>
+                </div>
+
+                <div id="buyer-fields" class="role-fields space-y-4">
+                    <div class="space-y-1.5">
+                        <label class="text-[10px] font-bold text-forest uppercase tracking-widest ml-1">Contact Sequence (Phone)</label>
+                        <input type="text" name="buyer_phone" class="input-field" placeholder="+91 XXXX XXX XXX">
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="text-[10px] font-bold text-forest uppercase tracking-widest ml-1">Delivery Hub (Address)</label>
+                        <input type="text" name="buyer_address" class="input-field" placeholder="Full operational address">
+                    </div>
+                </div>
+
+                <div class="pt-6">
+                    <button type="submit" class="btn-primary">
+                        Initialize Registration <i class="fas fa-user-plus ml-3"></i>
+                    </button>
+                    <p class="mt-8 text-center text-forest/40 text-sm font-medium">
+                        Already part of the ecosystem? 
+                        <a href="{% url 'login' %}" class="text-forest font-bold hover:underline decoration-terracotta underline-offset-4 ml-1">Access Terminal</a>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- Role Toggle Script -->
+<!-- Styling Injection for existing form fields -->
 <script>
-  const roleSelect = document.getElementById('role');
-  const buyerFields = document.getElementById('buyer-fields');
-  const farmerFields = document.getElementById('farmer-fields');
+    // Inject custom classes to Django-generated fields
+    document.addEventListener('DOMContentLoaded', () => {
+        const inputs = document.querySelectorAll('input:not([type="hidden"]):not([type="submit"])');
+        inputs.forEach(input => {
+            input.classList.add('input-field');
+        });
+    });
 
-  roleSelect.addEventListener('change', function () {
-    if (this.value === 'buyer') {
-      buyerFields.style.display = 'block';
-      farmerFields.style.display = 'none';
-    } else if (this.value === 'farmer') {
-      farmerFields.style.display = 'block';
-      buyerFields.style.display = 'none';
-    } else {
-      buyerFields.style.display = 'none';
-      farmerFields.style.display = 'none';
+    function selectRole(role) {
+        // Reset
+        document.querySelectorAll('.role-card').forEach(c => c.classList.remove('active', 'ring-2', 'ring-forest'));
+        document.querySelectorAll('.role-fields').forEach(f => f.style.display = 'none');
+        
+        // Set
+        document.getElementById('role-input').value = role;
+        document.getElementById('role-' + role).classList.add('active', 'ring-2', 'ring-forest');
+        document.getElementById(role + '-fields').style.display = 'block';
     }
-  });
 </script>
 
 </body>

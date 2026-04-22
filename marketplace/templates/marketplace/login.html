@@ -1,181 +1,158 @@
-<!-- {% load static %}
-
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
 <head>
     <meta charset="UTF-8">
-    <title>Login - Farm Market</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-image: url("{% static 'images/agriculture-bg.jpg' %}");
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-position: center;
-            height: 100vh;
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | FarmDirect Suite</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Tailwind Play CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'forest': '#1B4332',
+                        'terracotta': '#BC4749',
+                        'porcelain': '#F8F9FA',
+                    },
+                    fontFamily: {
+                        'manrope': ['Manrope', 'sans-serif'],
+                        'inter': ['Inter', 'sans-serif'],
+                    }
+                }
+            }
         }
-        .login-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-        }
-        .card {
-            padding: 30px;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.95);
+    </script>
+    <style type="text/tailwindcss">
+        @layer components {
+            .input-field {
+                @apply w-full bg-forest/5 border border-forest/10 rounded-xl px-4 py-3 text-forest focus:ring-2 focus:ring-forest focus:bg-white transition-all outline-none;
+            }
+            .btn-primary {
+                @apply w-full bg-forest text-white py-4 rounded-xl font-bold hover:bg-[#0C2118] transition-all transform active:scale-[0.98] shadow-xl shadow-forest/20;
+            }
         }
     </style>
 </head>
-<body>
-<div class="login-container">
-    <div class="card shadow-lg">
-        <h2 class="mb-4 text-center">Login to Farm Market</h2>
-        <form method="POST">
-            {% csrf_token %}
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-danger">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-success w-100">Login</button>
-        </form>
-        <div class="text-center mt-3">
-            <a href="{% url 'register' %}">Don't have an account? Register here</a>
+<body class="h-full font-inter bg-porcelain">
+
+<div class="h-full flex flex-col md:flex-row overflow-hidden">
+    <!-- Left Panel: Graphic & Content -->
+    <div class="hidden md:flex md:w-[55%] relative items-center justify-center p-12">
+        <!-- Background Image -->
+        <div class="absolute inset-0 z-0">
+            <img src="{% static 'images/auth_banner.png' %}" alt="Join the Movement" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-t from-forest/90 via-forest/40 to-transparent"></div>
         </div>
-    </div>
-</div>
-</body>
-</html> -->
 
+        <!-- Content Overlay -->
+        <div class="relative z-10 max-w-lg text-white">
+            <a href="{% url 'home' %}" class="inline-flex items-center gap-3 mb-12 group">
+                <div class="bg-white rounded-xl p-2 transition-transform group-hover:rotate-12 shadow-2xl">
+                    <i class="fas fa-leaf text-forest text-xl"></i>
+                </div>
+                <span class="font-manrope font-extrabold text-2xl tracking-tighter text-white">FarmDirect</span>
+            </a>
+            
+            <h1 class="text-5xl font-extrabold font-manrope leading-[1.1] mb-6">
+                Cultivating the <span class="text-white/60 underline decoration-terracotta/40 underline-offset-8">Digital Edge</span> of modern farming.
+            </h1>
+            <p class="text-lg text-white/70 leading-relaxed font-medium">
+                Log in to access your customized dashboard, manage harvests, and monitor real-time pricing across the regional mandi network.
+            </p>
 
-<!-- templates/login.html -->
-<!-- {% load static %}
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Login - Farm Market</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-image: url("{% static 'images/agriculture-bg.jpg' %}");
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-position: center;
-            height: 100vh;
-        }
-        .login-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-        }
-        .card {
-            padding: 30px;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.95);
-        }
-    </style>
-</head>
-<body>
-<div class="login-container">
-    <div class="card shadow-lg">
-        <h2 class="mb-4 text-center">Login to Farm Market</h2>
-        <form method="POST">
-            {% csrf_token %}
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-danger">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-success w-100">Login</button>
-        </form>
-        <div class="text-center mt-3">
-            <a href="{% url 'register' %}">Don't have an account? Register here</a>
-        </div>
-    </div>
-</div>
-</body>
-</html> -->
-
-
- 
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Login - Farm Market</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-image: url("{% static 'images/agriculture-bg.jpg' %}");
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-position: center;
-            height: 100vh;
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        .login-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            padding: 20px;
-        }
-
-        .card {
-            padding: 30px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-            width: 100%;
-            max-width: 400px;
-        }
-
-        h2 {
-            color: #2e7d32;
-            font-weight: bold;
-        }
-
-        .btn-custom {
-            font-weight: 500;
-        }
-    </style>
-</head>
-<body>
-
-<div class="login-container">
-    <div class="card">
-        <h2 class="mb-4 text-center">Login to Farm Market</h2>
-
-        <form method="POST">
-            {% csrf_token %}
-
-            <div class="mb-3">
-                <label for="username">Username</label>
-                <input type="text" name="username" id="username" class="form-control" autocomplete="username" required>
+            <div class="mt-12 flex items-center gap-4 py-4 px-6 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl">
+                <div class="flex -space-x-3">
+                    <div class="w-10 h-10 rounded-full border-2 border-forest bg-forest/20"></div>
+                    <div class="w-10 h-10 rounded-full border-2 border-forest bg-forest/40"></div>
+                    <div class="w-10 h-10 rounded-full border-2 border-forest bg-forest/60"></div>
+                </div>
+                <p class="text-sm font-bold tracking-tight">4,000+ Farmers online now</p>
             </div>
-            <div class="mb-3">
-                <label for="password">Password</label>
-                <input type="password" name="password" id="password" class="form-control" autocomplete="current-password" required>
+        </div>
+        
+        <!-- Bottom Tag -->
+        <p class="absolute bottom-10 left-12 text-xs font-bold uppercase tracking-widest text-white/30">
+            Secure Terminal v3.4.1 // Encryption Enabled
+        </p>
+    </div>
+
+    <!-- Right Panel: Auth Form -->
+    <div class="flex-grow flex items-center justify-center p-6 md:p-12 lg:p-24 bg-white relative">
+        <!-- Decoration for mobile -->
+        <div class="absolute top-10 left-10 md:hidden scale-75">
+            <div class="flex items-center gap-2">
+                <div class="bg-forest rounded-lg p-2 text-white">
+                    <i class="fas fa-leaf text-sm"></i>
+                </div>
+                <span class="font-manrope font-extrabold text-lg text-forest">FarmDirect</span>
             </div>
-            <button type="submit" class="btn btn-success w-100 btn-custom">Login</button>
-        </form>
-
-        <div class="text-center mt-3">
-            <a href="{% url 'register' %}">Don't have an account? Register here</a>
-        </div>
-        <div class="mt-3 text-center">
-            <a href="{% url 'password_reset' %}">Forgot Password?</a>
         </div>
 
+        <div class="w-full max-w-[420px] space-y-10">
+            <div>
+                <h2 class="text-3xl font-extrabold font-manrope text-forest mb-2">Welcome Back.</h2>
+                <p class="text-forest/50 font-medium">Please enter your credentials to access the secure terminal.</p>
+            </div>
+
+            <form method="POST" class="space-y-6">
+                {% csrf_token %}
+                
+                {% if messages %}
+                <div class="space-y-2">
+                    {% for message in messages %}
+                    <div class="p-4 rounded-xl bg-red-50 border border-red-100 text-red-600 text-sm font-bold flex items-center gap-3">
+                         <i class="fas fa-circle-exclamation underline decoration-red-200"></i>
+                         {{ message }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <div class="space-y-1.5">
+                    <label for="username" class="text-xs font-bold text-forest uppercase tracking-widest ml-1">Terminal ID (Username)</label>
+                    <input type="text" name="username" id="username" class="input-field" placeholder="e.g. marcus_farmer_01" required autofocus>
+                </div>
+
+                <div class="space-y-1.5">
+                    <div class="flex justify-between items-center px-1">
+                        <label for="password" class="text-xs font-bold text-forest uppercase tracking-widest">Access Key (Password)</label>
+                        <a href="{% url 'password_reset' %}" class="text-[10px] font-bold text-terracotta uppercase tracking-[0.2em] hover:opacity-70">Forgot Key?</a>
+                    </div>
+                    <input type="password" name="password" id="password" class="input-field" placeholder="••••••••" required>
+                </div>
+
+                <div class="pt-2">
+                    <button type="submit" class="btn-primary">
+                        Initiate Login <i class="fas fa-arrow-right-long ml-3"></i>
+                    </button>
+                </div>
+            </form>
+
+            <div class="pt-6 border-t border-forest/5 text-center">
+                <p class="text-forest/40 text-sm font-medium">
+                    New to the ecosystem? 
+                    <a href="{% url 'register' %}" class="text-forest font-bold hover:underline decoration-terracotta underline-offset-4 ml-2">Request Access</a>
+                </p>
+            </div>
+
+            <!-- Trust Badges -->
+            <div class="flex items-center justify-center gap-8 pt-8 opacity-20 filter grayscale">
+                <i class="fas fa-shield-halved text-2xl"></i>
+                <i class="fas fa-fingerprint text-2xl"></i>
+                <i class="fas fa-lock text-2xl"></i>
+            </div>
+        </div>
     </div>
 </div>
 

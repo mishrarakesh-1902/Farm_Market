@@ -1,205 +1,208 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>{{ product.name }}</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body {
-      background-color: #f5fdf4;
-      min-height: 100vh;
-      padding-top: 60px;
-      padding-bottom: 60px;
-    }
+{% extends "base.html" %}
+{% load static %}
 
-    .product-container {
-      border-radius: 25px;
-      background-color: #ffffff;
-      box-shadow: 0 8px 24px rgba(76, 175, 80, 0.1);
-      padding: 30px;
-      position: relative;
-      overflow: hidden;
-    }
+{% block title %}{{ product.name }} | FarmDirect Terminal{% endblock %}
 
-    .product-img {
-      width: 100%;
-      height: 400px;
-      object-fit: cover;
-      border-radius: 15px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
+{% block content %}
+<div class="bg-porcelain min-h-screen pt-12 pb-24">
+    <div class="max-w-7xl mx-auto px-6">
+        <!-- Breadcrumbs -->
+        <nav class="flex items-center gap-2 text-[10px] font-bold text-forest/40 uppercase tracking-[0.2em] mb-8">
+            <a href="{% url 'home' %}" class="hover:text-forest transition-colors">Hub</a>
+            <i class="fas fa-chevron-right text-[8px]"></i>
+            <a href="{% url 'product_list' %}" class="hover:text-forest transition-colors">Marketplace</a>
+            <i class="fas fa-chevron-right text-[8px]"></i>
+            <span class="text-forest">{{ product.name }}</span>
+        </nav>
 
-    .thumb-scroll {
-      overflow-x: auto;
-      white-space: nowrap;
-      padding-top: 10px;
-    }
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            <!-- Left: Gallery Section -->
+            <div class="lg:col-span-7 space-y-6">
+                <div class="glass-card !rounded-[32px] overflow-hidden bg-white shadow-2xl shadow-forest/5 relative group">
+                    {% if product.images.all %}
+                        <img id="main-display" src="{{ product.images.all.0.image.url }}" alt="{{ product.name }}" 
+                             class="w-full aspect-[4/3] object-cover transition-transform duration-700 group-hover:scale-105">
+                    {% else %}
+                        <div class="w-full aspect-[4/3] bg-forest/5 flex items-center justify-center">
+                            <i class="fas fa-image text-6xl text-forest/10"></i>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Floating Quality Badge -->
+                    <div class="absolute top-8 left-8 p-4 glass-card !bg-white/80 flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-forest text-white flex items-center justify-center">
+                            <i class="fas fa-certificate"></i>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-bold text-forest/40 uppercase tracking-widest">Quality Score</p>
+                            <p class="text-sm font-extrabold text-forest uppercase">A+ Certified</p>
+                        </div>
+                    </div>
+                </div>
 
-    .thumb-img {
-      width: 100px;
-      height: 100px;
-      object-fit: cover;
-      margin: 5px;
-      border-radius: 10px;
-      cursor: pointer;
-      border: 2px solid transparent;
-      display: inline-block;
-    }
+                <!-- Thumbnails -->
+                {% if product.images.all.count > 1 %}
+                <div class="flex gap-4 overflow-x-auto pb-2 scrollbar-none">
+                    {% for img in product.images.all %}
+                    <button onclick="updateDisplay('{{ img.image.url }}')" 
+                            class="flex-shrink-0 w-24 h-24 rounded-2xl overflow-hidden border-2 border-transparent hover:border-forest transition-all focus:border-forest">
+                        <img src="{{ img.image.url }}" class="w-full h-full object-cover">
+                    </button>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
 
-    .thumb-img:hover {
-      border-color: #4caf50;
-    }
+            <!-- Right: Detail Section -->
+            <div class="lg:col-span-5 space-y-8">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3">
+                        <span class="px-3 py-1 bg-terracotta/10 text-terracotta text-[10px] font-bold uppercase tracking-widest rounded-full">Limited Stock</span>
+                        <span class="text-forest/30 font-bold text-[10px] uppercase tracking-widest">UID: #FD-{{ product.pk|stringformat:"05d" }}</span>
+                    </div>
+                    <h1 class="text-4xl md:text-5xl font-extrabold text-forest font-manrope tracking-tight leading-tight">
+                        {{ product.name }}
+                    </h1>
+                    <div class="flex items-center gap-6">
+                        <div class="flex items-center gap-1 text-terracotta">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <p class="text-sm font-bold text-forest/40 underline underline-offset-4 decoration-forest/10">{{ reviews.count }} Verified Reviews</p>
+                    </div>
+                </div>
 
-    .product-details h2 {
-      font-size: 2rem;
-      color: #2e7d32;
-      font-weight: bold;
-    }
+                <div class="glass-card p-8 !bg-forest/5 border-forest/10 space-y-6">
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-4xl font-extrabold text-forest font-manrope">₹{{ product.price_per_unit }}</span>
+                        <span class="text-forest/40 font-bold uppercase text-xs tracking-widest">/ {{ product.unit|default:"Unit" }}</span>
+                    </div>
+                    
+                    <p class="text-forest/70 leading-relaxed font-inter">
+                        {{ product.description }}
+                    </p>
 
-    .product-details p {
-      font-size: 1.1rem;
-      color: #333;
-      margin-bottom: 0.7rem;
-    }
+                    <div class="grid grid-cols-2 gap-4 pt-4 border-t border-forest/10">
+                        <div class="space-y-1">
+                            <p class="text-[10px] font-bold text-forest/40 uppercase tracking-widest font-manrope">Storage Loc</p>
+                            <p class="text-sm font-bold text-forest"><i class="fas fa-map-marker-alt text-terracotta mr-2"></i>{{ product.location }}</p>
+                        </div>
+                        <div class="space-y-1">
+                            <p class="text-[10px] font-bold text-forest/40 uppercase tracking-widest font-manrope">Available Qty</p>
+                            <p class="text-sm font-bold text-forest"><i class="fas fa-boxes-stacked text-forest opacity-30 mr-2"></i>{{ product.quantity }} {{ product.unit }}</p>
+                        </div>
+                    </div>
+                </div>
 
-    .label {
-      font-weight: 600;
-      color: #555;
-    }
+                <!-- Seller Profile Card -->
+                <div class="flex items-center gap-4 p-6 glass-card !bg-white">
+                    <div class="w-14 h-14 rounded-full bg-forest/5 flex items-center justify-center border border-forest/10">
+                        <i class="fas fa-tractor text-forest/30"></i>
+                    </div>
+                    <div class="flex-grow">
+                        <p class="text-[10px] font-bold text-forest/40 uppercase tracking-widest mb-1">Regional Producer</p>
+                        <h4 class="font-extrabold text-forest">{{ product.seller.username }}</h4>
+                    </div>
+                    <a href="{% url 'contact' %}" class="w-10 h-10 rounded-full border border-forest/10 flex items-center justify-center hover:bg-forest hover:text-white transition-all">
+                        <i class="fas fa-envelope text-xs"></i>
+                    </a>
+                </div>
 
-    .back-btn {
-      background-color: #4caf50;
-      color: white;
-      border: none;
-    }
-
-    .back-btn:hover {
-      background-color: #388e3c;
-    }
-
-    .review-section {
-      margin-top: 40px;
-      padding-top: 30px;
-      border-top: 1px solid #ccc;
-    }
-
-    .review-item {
-      margin-bottom: 20px;
-      border-left: 4px solid #4caf50;
-      padding-left: 15px;
-    }
-
-    .leaf-icon {
-      position: absolute;
-      width: 40px;
-      height: 40px;
-      opacity: 0.3;
-    }
-
-    .leaf-top-left {
-      top: 15px;
-      left: 15px;
-      transform: rotate(-20deg);
-    }
-
-    .leaf-bottom-right {
-      bottom: 15px;
-      right: 15px;
-      transform: rotate(45deg);
-    }
-  </style>
-</head>
-<body>
-<div class="container">
-  <div class="product-container">
-    <!-- Decorative Leaves -->
-    <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" class="leaf-icon leaf-top-left" alt="leaf">
-    <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" class="leaf-icon leaf-bottom-right" alt="leaf">
-
-    <div class="row align-items-center">
-      <div class="col-md-6 mb-4 mb-md-0">
-        <!-- ✅ Main Product Image -->
-        {% if product.images.first %}
-          <img id="main-image" src="{{ product.images.first.image.url }}" class="product-img" alt="{{ product.name }}">
-        {% else %}
-          <img id="main-image" src="https://via.placeholder.com/600x400?text=No+Image" class="product-img" alt="No image">
-        {% endif %}
-
-        <!-- ✅ Thumbnails Gallery -->
-        {% if product.images.all %}
-          <div class="thumb-scroll">
-            {% for img in product.images.all %}
-              <img src="{{ img.image.url }}" class="thumb-img" alt="Product Image"
-                   onclick="document.getElementById('main-image').src=this.src">
-            {% endfor %}
-          </div>
-        {% endif %}
-      </div>
-
-      <div class="col-md-6 product-details">
-        <h2>{{ product.name }}</h2>
-        <p>{{ product.description }}</p>
-        <p><span class="label">Quantity:</span> {{ product.quantity }}</p>
-        <p><span class="label">Price per {{ product.unit }}:</span> ₹{{ product.price_per_unit }}</p>
-        <p><span class="label">Location:</span> {{ product.location }}</p>
-        <p><span class="label">Seller:</span> {{ product.seller.username }}</p>
-
-        <div class="d-flex gap-3 mt-4">
-          <a href="{% url 'product_list' %}" class="btn back-btn">← Back to Products</a>
-          <a href="{% url 'add_to_cart' product.id %}?next={{ request.get_full_path }}" class="btn btn-primary">Add to Cart</a>
+                <!-- CTA Action Area -->
+                <div class="flex gap-4 pt-4">
+                    <a href="{% url 'add_to_cart' product.id %}?next={{ request.get_full_path }}" 
+                       class="flex-grow btn-primary !py-5 flex items-center justify-center gap-4 text-lg">
+                        <i class="fas fa-cart-plus"></i> Secure Listing
+                    </a>
+                    <button class="w-16 h-16 rounded-xl border-2 border-forest/10 flex items-center justify-center text-forest hover:border-forest transition-colors transition-all">
+                        <i class="far fa-heart font-bold"></i>
+                    </button>
+                </div>
+            </div>
         </div>
-      </div>
+
+        <!-- Review Section -->
+        <div class="mt-32 max-w-4xl">
+            <div class="flex items-center gap-4 mb-12">
+                <div class="h-8 w-1.5 bg-terracotta rounded-full"></div>
+                <h2 class="text-3xl font-extrabold text-forest font-manrope uppercase tracking-tight">Post-Market Feedback</h2>
+            </div>
+
+            {% if request.user.is_authenticated %}
+            <div class="glass-card p-8 !bg-white mb-16 shadow-xl shadow-forest/5">
+                <form method="POST" class="space-y-6">
+                    {% csrf_token %}
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                        <div>
+                            <label class="text-[10px] font-bold text-forest uppercase tracking-widest mb-4 block">Product Rating</label>
+                            <select name="rating" class="w-full bg-forest/5 border border-forest/10 rounded-xl px-4 py-3 text-forest font-bold focus:ring-2 focus:ring-forest transition-all" required>
+                                <option value="5">⭐ 5 - Excellent</option>
+                                <option value="4">⭐ 4 - Good</option>
+                                <option value="3">⭐ 3 - Average</option>
+                                <option value="2">⭐ 2 - Poor</option>
+                                <option value="1">⭐ 1 - Invalid</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-3">
+                            <label class="text-[10px] font-bold text-forest uppercase tracking-widest mb-4 block">Detailed Commentary</label>
+                            <textarea name="comment" rows="3" class="w-full bg-forest/5 border border-forest/10 rounded-xl px-6 py-4 text-forest font-medium focus:ring-2 focus:ring-forest focus:bg-white transition-all outline-none" placeholder="Share your experience with this batch..." required></textarea>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <button type="submit" class="btn-primary !px-8 !py-4">Publish Assessment</button>
+                    </div>
+                </form>
+            </div>
+            {% endif %}
+
+            <div class="space-y-8">
+                {% for review in reviews %}
+                <div class="glass-card p-8 !bg-white group">
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full bg-forest/5 flex items-center justify-center font-bold text-forest border border-forest/10">
+                                {{ review.user.username|make_list|first|upper }}
+                            </div>
+                            <div>
+                                <h4 class="font-extrabold text-forest italic">@{{ review.user.username }}</h4>
+                                <p class="text-[10px] font-bold text-forest/40 uppercase tracking-widest">{{ review.created_at|date:"M d, Y" }}</p>
+                            </div>
+                        </div>
+                        <div class="flex text-terracotta text-xs gap-1">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= review.rating %}
+                                    <i class="fas fa-star"></i>
+                                {% else %}
+                                    <i class="far fa-star opacity-20"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <p class="text-forest/70 font-inter leading-relaxed italic">
+                        "{{ review.comment }}"
+                    </p>
+                </div>
+                {% empty %}
+                <div class="py-12 px-8 glass-card border-dashed border-forest/20 !bg-transparent text-center">
+                    <p class="text-forest/40 font-bold uppercase text-xs tracking-widest italic">No market feedback available for this terminal item.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
     </div>
-
-    <!-- ✅ Review Section -->
-    <div class="review-section">
-      <h4 class="text-success">Customer Reviews</h4>
-
-      {% if request.user.is_authenticated %}
-      <form method="POST">
-        {% csrf_token %}
-        <div class="row g-3">
-          <div class="col-md-2">
-            <label for="rating" class="form-label">Rating</label>
-            <select name="rating" id="rating" class="form-select" required>
-              <option value="">--</option>
-              {% for i in "12345" %}
-                <option value="{{ i }}">{{ i }}</option>
-              {% endfor %}
-            </select>
-          </div>
-          <div class="col-md-10">
-            <label for="comment" class="form-label">Comment</label>
-            <textarea name="comment" id="comment" rows="2" class="form-control" required></textarea>
-          </div>
-        </div>
-        <button class="btn btn-success mt-3" type="submit">Submit Review</button>
-      </form>
-      {% else %}
-        <p><a href="{% url 'login' %}">Login</a> to submit a review.</p>
-      {% endif %}
-
-      <hr>
-
-      {% for review in reviews %}
-        <div class="review-item">
-          <strong>{{ review.user.username }}</strong> rated ⭐{{ review.rating }}<br>
-          <small class="text-muted">{{ review.created_at }}</small>
-          <p>{{ review.comment }}</p>
-
-          {% if request.user == review.user %}
-            <form method="POST" action="{% url 'delete_review' review.id %}" style="display:inline;">
-              {% csrf_token %}
-              <button class="btn btn-sm btn-outline-danger">Delete</button>
-            </form>
-          {% endif %}
-        </div>
-      {% empty %}
-        <p>No reviews yet.</p>
-      {% endfor %}
-    </div>
-  </div>
 </div>
-</body>
-</html>
+
+<script>
+    function updateDisplay(url) {
+        const display = document.getElementById('main-display');
+        display.style.opacity = '0';
+        setTimeout(() => {
+            display.src = url;
+            display.style.opacity = '1';
+        }, 150);
+    }
+</script>
+{% endblock %}

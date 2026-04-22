@@ -1,0 +1,89 @@
+<footer class="bg-forest pt-20 pb-10 px-4 sm:px-6 lg:px-8 text-white/90">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+        <!-- Brand & Vision -->
+        <div class="space-y-6">
+            <div class="flex items-center gap-3">
+                <div class="bg-white/10 rounded-xl p-2 border border-white/10">
+                    <i class="fas fa-leaf text-white text-xl"></i>
+                </div>
+                <span class="font-manrope font-extrabold text-2xl tracking-tight text-white">FarmDirect</span>
+            </div>
+            <p class="text-sm leading-relaxed text-white/60 font-inter max-w-sm">
+                Empowering the next generation of agronomists through AI-driven insights, streamlined logistics, and a transparent farm-to-table marketplace.
+            </p>
+            <div class="flex items-center gap-4">
+                <a href="#" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors">
+                    <i class="fab fa-facebook-f text-sm"></i>
+                </a>
+                <a href="#" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors">
+                    <i class="fab fa-twitter text-sm"></i>
+                </a>
+                <a href="#" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors">
+                    <i class="fab fa-instagram text-sm"></i>
+                </a>
+                <a href="#" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors">
+                    <i class="fab fa-linkedin-in text-sm"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Ecosystem -->
+        <div>
+            <h4 class="font-manrope font-bold text-lg mb-6 text-white">Market Ecosystem</h4>
+            <ul class="space-y-4">
+                <li><a href="{% url 'home' %}" class="text-sm text-white/60 hover:text-white transition-colors">Marketplace Overview</a></li>
+                <li><a href="{% url 'product_list' %}" class="text-sm text-white/60 hover:text-white transition-colors">Farmer Listings</a></li>
+                <li><a href="{% url 'quality_input_list' %}" class="text-sm text-white/60 hover:text-white transition-colors">Premium Inputs</a></li>
+                <li><a href="{% url 'home' %}" class="text-sm text-white/60 hover:text-white transition-colors">Logistics Network</a></li>
+            </ul>
+        </div>
+
+        <!-- AI Intelligence -->
+        <div>
+            <h4 class="font-manrope font-bold text-lg mb-6 text-white">AI Intelligence</h4>
+            <ul class="space-y-4">
+                <li><a href="{% url 'predict_crop' %}" class="text-sm text-white/60 hover:text-white transition-colors">Crop Suitability Model</a></li>
+                <li><a href="{% url 'yeild_predict' %}" class="text-sm text-white/60 hover:text-white transition-colors">Yield Forecast Suite</a></li>
+                <li><a href="{% url 'home' %}" class="text-sm text-white/60 hover:text-white transition-colors">Market Pulse API</a></li>
+                <li><a href="{% url 'contact' %}" class="text-sm text-white/60 hover:text-white transition-colors">Technical Support</a></li>
+            </ul>
+        </div>
+
+        <!-- Trust & Contact -->
+        <div>
+            <h4 class="font-manrope font-bold text-lg mb-6 text-white">Contact Terminal</h4>
+            <div class="space-y-4">
+                <div class="flex items-start gap-3">
+                    <i class="fas fa-headset text-white/40 mt-1"></i>
+                    <div>
+                        <p class="text-[10px] uppercase tracking-widest text-white/40 font-bold mb-1">Global Support</p>
+                        <p class="text-sm font-inter">support@farmdirect.tech</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3">
+                    <i class="fas fa-map-marker-alt text-white/40 mt-1"></i>
+                    <div>
+                        <p class="text-[10px] uppercase tracking-widest text-white/40 font-bold mb-1">HQ Core</p>
+                        <p class="text-sm font-inter">Agro-Tech Hub, Bangalore, India</p>
+                    </div>
+                </div>
+                <div class="mt-6 pt-6 border-t border-white/5">
+                    <p class="text-xs text-white/40 flex items-center gap-2">
+                        <i class="fas fa-shield-halved"></i> Verified Secure Platform
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Copyright -->
+    <div class="max-w-7xl mx-auto pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
+        <p class="text-xs text-white/30 font-inter">
+            &copy; 2026 FarmDirect Agro-Tech Suite. All operational rights reserved.
+        </p>
+        <div class="flex items-center gap-8">
+            <a href="#" class="text-[10px] uppercase mt-1 tracking-widest text-white/30 hover:text-white transition-colors font-bold">Privacy Protocol</a>
+            <a href="#" class="text-[10px] uppercase mt-1 tracking-widest text-white/30 hover:text-white transition-colors font-bold">Terms of Service</a>
+        </div>
+    </div>
+</footer>

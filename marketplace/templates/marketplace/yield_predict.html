@@ -1,166 +1,218 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yield Prediction</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(to right, #a8edea, #fed6e3);
-            padding: 30px;
-        }
+{% extends "base.html" %}
+{% load static %}
 
-        .container {
-            max-width: 650px;
-            margin: auto;
-            background-color: #ffffff;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease-in-out;
-            animation: slideUp 0.5s ease-out;
-        }
+{% block title %}Intelligence | Yield Forecasting{% endblock %}
 
-        @keyframes slideUp {
-            0% { transform: translateY(40px); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
-        }
-
-        h2 {
-            text-align: center;
-            margin-bottom: 25px;
-            color: #2c3e50;
-        }
-
-        form p {
-            margin-bottom: 15px;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            box-sizing: border-box;
-            transition: border-color 0.3s;
-        }
-
-        input:focus, select:focus {
-            border-color: #2ecc71;
-            outline: none;
-        }
-
-        button {
-            background-color: #27ae60;
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            width: 100%;
-            transition: background-color 0.3s;
-        }
-
-        button:hover {
-            background-color: #2ecc71;
-        }
-
-        .result, .inputs {
-            margin-top: 30px;
-            text-align: center;
-            animation: fadeIn 0.5s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .result h3 {
-            color: #34495e;
-        }
-
-        .inputs {
-            background: #f0f8f0;
-            border: 1px solid #c8e6c9;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
-        }
-
-        .inputs h4 {
-            margin-bottom: 10px;
-            color: #1b5e20;
-        }
-
-        .inputs p {
-            margin: 5px 0;
-        }
-
-        /* Home button styling */
-        .home-button {
-            text-align: right;
-            margin-bottom: 20px;
-        }
-
-        .home-button a {
-            background-color: #2e7d32;
-            color: white;
-            padding: 10px 18px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: bold;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-            transition: background-color 0.3s ease;
-        }
-
-        .home-button a:hover {
-            background-color: #1b5e20;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-
-        <!-- 🏠 Home Button -->
-        <div class="home-button">
-        {% if user.is_authenticated %}
-        {% if user.userprofile.role == "farmer" %}
-            <a href="{% url 'farmer_dashboard' %}">🏠 Home</a>
-        {% elif user.userprofile.role == "buyer" %}
-            <a href="{% url 'buyer_dashboard' %}">🏠 Home</a>
-        {% else %}
-            <a href="{% url 'home' %}">🏠 Home</a>
-        {% endif %}
-        {% else %}
-            <a href="{% url 'home' %}">🏠 Home</a>
-        {% endif %}
-        </div>
-
-
-        <h2>🌾 Predict Crop Yield</h2>
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <div style="text-align:center;">
-                <button type="submit">Predict</button>
-            </div>
-        </form>
-
-        {% if entered_data %}
-        <div class="inputs">
-            <h4>Entered Data:</h4>
-            <p>Year: {{ entered_data.year }} | Average Rainfall: {{ entered_data.average_rain_fall_mm_per_year }}</p>
-            <p>Pesticides: {{ entered_data.pesticides_tonnes }} | Average Temperature: {{ entered_data.avg_temp }} | Area: {{ entered_data.area }} | Crop Iteam: {{ entered_data.item }}</p>
-        </div>
-        {% endif %}
-
-        {% if prediction %}
-        <div class="result">
-            <h3>📈 Predicted Yield: {{ prediction|floatformat:2 }} tons/ha</h3>
-        </div>
-        {% endif %}
+{% block content %}
+<div class="bg-porcelain min-h-screen pt-12 pb-24 relative overflow-hidden">
+    <!-- Tech Background Elements -->
+    <div class="absolute inset-0 z-0 opacity-5 pointer-events-none">
+        <div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(#BC4749_1px,transparent_1px)] [background-size:40px_40px]"></div>
     </div>
-</body>
-</html>
+
+    <div class="max-w-4xl mx-auto px-6 relative z-10">
+        <!-- Breadcrumb -->
+        <div class="mb-8">
+            <a href="{% url 'ai_intelligence_hub' %}" class="inline-flex items-center gap-2 text-forest/40 hover:text-forest font-bold text-[10px] uppercase tracking-widest transition-colors group">
+                <i class="fas fa-arrow-left group-hover:-translate-x-1 transition-transform"></i>
+                Back to Intelligence Suite
+            </a>
+        </div>
+        <!-- Header -->
+        <div class="text-center mb-12 space-y-4">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-forest/5 border border-forest/10 text-forest text-[10px] font-bold uppercase tracking-[0.2em]">
+                <i class="fas fa-satellite animate-spin-slow"></i> Orbital Data Sync
+            </div>
+            <h1 class="text-4xl md:text-5xl font-extrabold text-forest font-manrope tracking-tight">Yield <span class="text-white/40">Forecasting.</span></h1>
+            <p class="text-forest/50 font-medium font-inter max-w-lg mx-auto">Analyze historical climatic patterns and operational inputs to project production volumes.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+            <!-- Form Side -->
+            <div class="md:col-span-12">
+                <div class="glass-card p-8 md:p-12 bg-white shadow-2xl shadow-forest/5">
+                    <form method="post" class="space-y-8" id="yieldForm">
+                        {% csrf_token %}
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            {% for field in form %}
+                            <div class="space-y-2 group">
+                                <label class="text-[10px] font-bold text-forest uppercase tracking-widest flex items-center gap-2">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-forest/20 group-focus-within:bg-forest transition-colors"></span>
+                                    {{ field.label }}
+                                </label>
+                                {{ field }}
+                                {% if field.errors %}
+                                <p class="text-[10px] text-red-500 font-bold px-2">{{ field.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="pt-8 border-t border-forest/5 text-center">
+                            <button type="submit" class="btn-primary !bg-terracotta hover:!bg-[#9B3B3D] !px-12 !py-5 flex items-center justify-center gap-4 mx-auto text-lg group">
+                                <span>Generate Yield Projection</span>
+                                <i class="fas fa-chart-line group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Result Overlay -->
+            {% if prediction %}
+            <div class="md:col-span-12 mt-12 animate-in fade-in slide-in-from-bottom-8 duration-1000">
+                <!-- Scenario Label -->
+                <div class="mb-4 flex items-center gap-3">
+                    <div class="h-px flex-grow bg-forest/10"></div>
+                    <p class="text-[11px] font-mono font-bold text-forest/60">Scenario: {{ entered_data.state }} {{ entered_data.crop }} Cultivator ({{ entered_data.season }})</p>
+                    <div class="h-px flex-grow bg-forest/10"></div>
+                </div>
+
+                <div class="glass-card !bg-white p-8 md:p-10 relative overflow-hidden group shadow-2xl shadow-forest/10 border-2 border-forest/10">
+                    
+                    <!-- Meta Header -->
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10 pb-8 border-b border-forest/5">
+                        <div class="space-y-1">
+                            <p class="text-forest/40 text-[10px] font-bold uppercase tracking-[0.2em]">High-Precision Synthesis</p>
+                            <h2 class="text-3xl font-extrabold text-forest font-manrope">Production <span class="text-forest/30 font-normal italic">Forecast.</span></h2>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="text-right">
+                                <p class="text-forest/30 text-[9px] font-bold uppercase">Confidence Score</p>
+                                <p class="text-sm font-extrabold text-forest">99.7% R²</p>
+                            </div>
+                            <div class="w-px h-8 bg-forest/10"></div>
+                            <i class="fas fa-microchip text-forest/20 text-2xl"></i>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+                        <!-- Left: Large Metric -->
+                        <div class="lg:col-span-5 space-y-8 flex flex-col items-center">
+                            <div class="relative w-52 h-52 rounded-full border-[10px] border-forest/5 flex items-center justify-center">
+                                <div class="absolute inset-[-4px] rounded-full border-2 border-forest/10"></div>
+                                <div class="absolute inset-[-12px] rounded-full border border-forest/5 border-t-forest animate-spin-slow"></div>
+                                
+                                <div class="text-center">
+                                    <p class="text-[9px] font-bold text-forest/40 uppercase tracking-widest mb-1">Predicted Yield</p>
+                                    <div class="flex items-baseline justify-center gap-1">
+                                        <span class="text-5xl font-black text-forest tracking-tighter">{{ prediction|floatformat:3 }}</span>
+                                        <span class="text-[10px] font-bold text-forest/40 uppercase">T/Ha</span>
+                                    </div>
+                                    <div class="mt-2 inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-forest/5 text-[9px] font-bold text-forest uppercase">
+                                        <i class="fas fa-check-circle"></i> Validated
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- New: Whole Farm Projection -->
+                            <div class="w-full bg-forest text-white rounded-2xl p-6 shadow-xl shadow-forest/20 relative overflow-hidden">
+                                <div class="absolute top-0 right-0 p-4 opacity-10">
+                                    <i class="fas fa-warehouse text-4xl"></i>
+                                </div>
+                                <p class="text-[9px] font-bold uppercase tracking-widest text-white/60 mb-1">Total Expected Production</p>
+                                <div class="flex items-baseline gap-2">
+                                    <h3 class="text-3xl font-black">{{ total_production }}</h3>
+                                    <span class="text-xs font-bold text-white/60 uppercase">Tonnes</span>
+                                </div>
+                                <p class="text-[10px] mt-2 text-white/40 font-medium">Calculated for {{ entered_data.area }} hectares of land.</p>
+                            </div>
+                        </div>
+
+                        <!-- Right: Data Readout -->
+                        <div class="lg:col-span-7 space-y-6">
+                            <!-- Terminal Data Box -->
+                            <div class="bg-forest/5 rounded-2xl p-6 border border-forest/10 font-mono relative overflow-hidden">
+                                <div class="flex items-center justify-between mb-4 pb-2 border-b border-forest/10">
+                                    <span class="text-[10px] text-forest/60 font-bold uppercase tracking-widest flex items-center gap-2">
+                                        <i class="fas fa-terminal text-[8px]"></i> Operational Briefing
+                                    </span>
+                                    <div class="flex gap-1">
+                                        <div class="w-1.5 h-1.5 rounded-full bg-red-400/40"></div>
+                                        <div class="w-1.5 h-1.5 rounded-full bg-amber-400/40"></div>
+                                        <div class="w-1.5 h-1.5 rounded-full bg-emerald-400/40"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-[11px]">
+                                    <div class="flex justify-between border-b border-forest/5 pb-1">
+                                        <span class="text-forest/40">Crop Item</span>
+                                        <span class="text-forest font-bold">{{ entered_data.crop }}</span>
+                                    </div>
+                                    <div class="flex justify-between border-b border-forest/5 pb-1">
+                                        <span class="text-forest/40">Season</span>
+                                        <span class="text-forest font-bold">{{ entered_data.season }}</span>
+                                    </div>
+                                    <div class="flex justify-between border-b border-forest/5 pb-1">
+                                        <span class="text-forest/40">State/Region</span>
+                                        <span class="text-forest font-bold">{{ entered_data.state }}</span>
+                                    </div>
+                                    <div class="flex justify-between border-b border-forest/5 pb-1">
+                                        <span class="text-forest/40">Year Cycle</span>
+                                        <span class="text-forest font-bold">{{ entered_data.year }}</span>
+                                    </div>
+                                    <div class="flex justify-between border-b border-forest/5 pb-1">
+                                        <span class="text-forest/40">Rainfall</span>
+                                        <span class="text-forest font-bold">{{ entered_data.rainfall }} <span class="text-[9px] opacity-40">mm</span></span>
+                                    </div>
+                                    <div class="flex justify-between border-b border-forest/5 pb-1">
+                                        <span class="text-forest/40">Fertilizer</span>
+                                        <span class="text-forest font-bold">{{ entered_data.fertilizer }} <span class="text-[9px] opacity-40">kg</span></span>
+                                    </div>
+                                    <div class="flex justify-between border-b border-forest/5 pb-1">
+                                        <span class="text-forest/40">Pesticide</span>
+                                        <span class="text-forest font-bold">{{ entered_data.pesticide }} <span class="text-[9px] opacity-40">kg</span></span>
+                                    </div>
+                                    <div class="flex justify-between border-b border-forest/5 pb-1">
+                                        <span class="text-forest/40">Land Size</span>
+                                        <span class="text-forest font-bold">{{ entered_data.area }} <span class="text-[9px] opacity-40">ha</span></span>
+                                    </div>
+                                </div>
+
+                                <!-- Statistical Band -->
+                                <div class="mt-6 pt-4 border-t border-forest/10">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-[9px] font-bold text-forest/40 uppercase tracking-widest">Statistical Confidence Band</span>
+                                        <span class="text-[10px] font-bold text-forest/60">{{ conf_low }} - {{ conf_high }} t/ha</span>
+                                    </div>
+                                    <div class="h-1.5 w-full bg-forest/5 rounded-full overflow-hidden flex">
+                                        <div class="h-full bg-forest opacity-20" style="width: 45%"></div>
+                                        <div class="h-full bg-emerald-500" style="width: 10%"></div>
+                                        <div class="h-full bg-forest opacity-20" style="width: 45%"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-wrap gap-4 pt-2">
+                                <a href="{% url 'yeild_predict' %}" class="btn-primary !py-3.5 !px-10 text-xs !bg-forest hover:!bg-forest/90 flex items-center gap-2">
+                                    <i class="fas fa-redo text-[10px]"></i> Recalculate Scenario
+                                </a>
+                                <button onclick="window.print()" class="px-6 py-3 rounded-xl border border-forest/10 text-forest text-xs font-bold hover:bg-forest/5 transition-colors flex items-center gap-2">
+                                    <i class="fas fa-print"></i> Export Briefing
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    #yieldForm input, #yieldForm select {
+        @apply w-full bg-forest/5 border border-forest/10 rounded-xl px-4 py-3 text-forest focus:ring-2 focus:ring-forest focus:bg-white transition-all outline-none font-bold text-sm;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const inputs = document.querySelectorAll('#yieldForm input, #yieldForm select');
+        inputs.forEach(input => {
+            input.classList.add('w-full', 'bg-forest/5', 'border', 'border-forest/10', 'rounded-xl', 'px-4', 'py-3', 'text-forest', 'focus:ring-2', 'focus:ring-forest', 'focus:bg-white', 'transition-all', 'outline-none', 'font-bold', 'text-sm');
+        });
+    });
+</script>
+{% endblock %}

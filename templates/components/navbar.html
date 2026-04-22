@@ -1,0 +1,108 @@
+<nav class="fixed top-0 left-0 right-0 z-[110] px-4 py-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto glass-card flex items-center justify-between px-6 py-3 h-16">
+        <!-- Logo -->
+        <a href="{% url 'home' %}" class="flex items-center gap-3 group">
+            <div class="bg-forest rounded-xl p-2 transition-transform group-hover:rotate-12">
+                <i class="fas fa-leaf text-white text-xl"></i>
+            </div>
+            <span class="font-manrope font-extrabold text-xl tracking-tight text-forest">FarmDirect</span>
+        </a>
+
+        <!-- Desktop Nav -->
+        <div class="hidden md:flex items-center gap-8">
+            {% if user.is_authenticated %}
+                {% if user.userprofile.role == "farmer" %}
+                    <a href="{% url 'home' %}" class="nav-link">Market</a>
+                    <a href="{% url 'farmer_dashboard' %}" class="nav-link">Control Panel</a>
+                    <a href="{% url 'my_products' %}" class="nav-link">My Produce</a>
+                    <a href="{% url 'ai_intelligence_hub' %}" class="nav-link">AI Suite</a>
+                {% elif user.userprofile.role == "buyer" %}
+                    <a href="{% url 'home' %}" class="nav-link">Market</a>
+                    <a href="{% url 'buyer_dashboard' %}" class="nav-link">Control Panel</a>
+                    <a href="{% url 'my_orders' %}" class="nav-link">Orders</a>
+                {% endif %}
+            {% else %}
+                <a href="{% url 'home' %}" class="nav-link">Marketplace</a>
+                <a href="{% url 'ai_intelligence_hub' %}" class="nav-link">AI Predictor</a>
+            {% endif %}
+            <a href="{% url 'contact' %}" class="nav-link">Contact</a>
+        </div>
+
+        <!-- Right Side: Auth & Mobile Toggle -->
+        <div class="flex items-center gap-4">
+            <div class="hidden md:flex items-center gap-3">
+                {% if user.is_authenticated %}
+                    <div class="flex items-center gap-3 border-r border-forest/10 pr-4">
+                        <div class="text-right">
+                            <p class="text-xs text-forest/50 font-medium leading-none">Welcome back</p>
+                            <p class="text-sm text-forest font-bold">{{ user.username }}</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-forest/5 flex items-center justify-center text-forest overflow-hidden border border-forest/10">
+                            {% if user.userprofile.profile_picture %}
+                                <img src="{{ user.userprofile.profile_picture.url }}" alt="Profile" class="w-full h-full object-cover">
+                            {% else %}
+                                <i class="fas fa-user-circle text-2xl opacity-40"></i>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <a href="{% url 'logout' %}" class="text-sm font-semibold text-terracotta hover:opacity-80 transition-opacity">
+                        <i class="fas fa-sign-out-alt mr-1"></i> Sign Out
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="text-sm font-bold text-forest py-2 px-4 rounded-lg hover:bg-forest/5 transition-colors">Login</a>
+                    <a href="{% url 'register' %}" class="btn-primary py-2 px-6">Join Now</a>
+                {% endif %}
+            </div>
+
+            <!-- Mobile Toggle -->
+            <button onclick="toggleMobileMenu()" class="md:hidden text-forest text-2xl p-2 hover:bg-forest/5 rounded-lg active:scale-95 transition-transform">
+                <i class="fas fa-bars-staggered"></i>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<!-- Mobile sidebar Menu -->
+<div id="mobile-menu" class="fixed top-0 right-0 h-full w-[280px] bg-white z-[120] shadow-2xl transition-transform duration-300 translate-x-full px-6 py-8 flex flex-col">
+    <div class="flex items-center justify-between mb-8">
+        <span class="font-manrope font-extrabold text-xl text-forest tracking-tight">Menu</span>
+        <button onclick="toggleMobileMenu()" class="text-forest/30 hover:text-forest text-2xl transition-colors">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <div class="flex flex-col gap-5 flex-grow">
+        {% if user.is_authenticated %}
+            <div class="bg-forest/5 rounded-2xl p-4 mb-4 flex items-center gap-3">
+                <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center text-forest border border-forest/10">
+                    <i class="fas fa-user text-xl opacity-40"></i>
+                </div>
+                <div>
+                    <p class="text-sm text-forest font-bold">{{ user.username }}</p>
+                    <p class="text-xs text-forest/50 capitalize">{{ user.userprofile.role }}</p>
+                </div>
+            </div>
+            
+            {% if user.userprofile.role == "farmer" %}
+                <a href="{% url 'home' %}" class="text-lg font-semibold text-forest py-2 border-b border-forest/5"><i class="fas fa-store mr-3 opacity-30"></i>Market</a>
+                <a href="{% url 'farmer_dashboard' %}" class="text-lg font-semibold text-forest py-2 border-b border-forest/5"><i class="fas fa-chart-line mr-3 opacity-30"></i>Control Panel</a>
+                <a href="{% url 'my_products' %}" class="text-lg font-semibold text-forest py-2 border-b border-forest/5"><i class="fas fa-box-open mr-3 opacity-30"></i>My Produce</a>
+                <a href="{% url 'ai_intelligence_hub' %}" class="text-lg font-semibold text-forest py-2 border-b border-forest/5"><i class="fas fa-seedling mr-3 opacity-30"></i>AI Suite</a>
+            {% elif user.userprofile.role == "buyer" %}
+                <a href="{% url 'home' %}" class="text-lg font-semibold text-forest py-2 border-b border-forest/5"><i class="fas fa-store mr-3 opacity-30"></i>Market</a>
+                <a href="{% url 'buyer_dashboard' %}" class="text-lg font-semibold text-forest py-2 border-b border-forest/5"><i class="fas fa-chart-line mr-3 opacity-30"></i>Control Panel</a>
+                <a href="{% url 'my_orders' %}" class="text-lg font-semibold text-forest py-2 border-b border-forest/5"><i class="fas fa-shopping-bag mr-3 opacity-30"></i>Orders</a>
+            {% endif %}
+        {% endif %}
+        <a href="{% url 'contact' %}" class="text-lg font-semibold text-forest py-2 border-b border-forest/5">Contact Support</a>
+    </div>
+
+    <div class="mt-auto pt-6 flex flex-col gap-3 border-top border-forest/10">
+        {% if user.is_authenticated %}
+            <a href="{% url 'logout' %}" class="btn-accent text-center bg-terracotta/10 !text-terracotta hover:!bg-terracotta/20">Sign Out</a>
+        {% else %}
+            <a href="{% url 'login' %}" class="text-center py-3 font-bold text-forest">Login</a>
+            <a href="{% url 'register' %}" class="btn-primary text-center">Get Started</a>
+        {% endif %}
+    </div>
+</div>

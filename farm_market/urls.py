@@ -71,6 +71,7 @@ urlpatterns = [
     path('contact/', views.contact_view, name='contact'),
 
     # Crop Prediction & Prices
+    path('ai-suite/', views.ai_intelligence_hub, name='ai_intelligence_hub'),
     path('predict-crop/', views.predict_crop, name='predict_crop'),
     path('yeild-predict/', views.yeild_predict, name='yeild_predict'),
     path('crop_price/', views.crop_price_view, name='crop_prices'),

@@ -1,134 +1,199 @@
+{% extends "base.html" %}
 {% load static %}
 {% load widget_tweaks %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Your Cart & Order</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-  <style>
-    body {
-      background-color: #f4fdf6;
-      padding: 30px 10px;
-      font-family: 'Segoe UI', sans-serif;
-    }
-    h2, h3 { color: #2e7d32; font-weight: bold; }
-    .cart-table th { background-color: #d0f0c0; }
-    .table th, .table td { vertical-align: middle; }
-    .form-container {
-      background-color: #ffffff; padding: 25px; border-radius: 15px;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.05); margin-top: 40px;
-    }
-    .btn-primary, .btn-success { border-radius: 8px; padding: 10px 18px; font-weight: 600; }
-    .btn-primary:hover { background-color: #145c32; }
-    .btn-danger { border-radius: 6px; }
-    .total-price { text-align: right; font-size: 1.3rem; font-weight: bold; color: #1b5e20; }
-  </style>
-</head>
-<body>
+{% block title %}Your Tray & Checkout | FarmDirect{% endblock %}
 
-<div class="container">
-  <h2 class="text-center mb-4">🛒 Your Cart</h2>
-
-  {% if cart_items %}
-  <form method="post" action="{% url 'update_cart' %}">
-    {% csrf_token %}
-    <div class="table-responsive">
-      <table class="table table-bordered cart-table text-center align-middle">
-        <thead class="table-success">
-          <tr>
-            <th>Product</th>
-            <th>Quantity</th>
-            <th>Unit</th>
-            <th>Price/unit</th>
-            <th>Total</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for item in cart_items %}
-          <tr>
-            <td>{{ item.product.name }}</td>
-            <td>
-              <input type="number" name="quantity_{{ item.id }}" value="{{ item.quantity }}" min="1" class="form-control">
-            </td>
-            <td>
-              <input type="text" name="unit_{{ item.id }}" value="{{ item.unit|default:item.product.unit }}" class="form-control">
-            </td>
-            <td>₹{{ item.product.price_per_unit }} {% if item.product.unit %}/{{ item.product.unit }}{% endif %}</td>
-            <td>₹{{ item.item_total_price }}</td>
-            <td>
-              <a href="{% url 'delete_cart_item' item.id %}" class="btn btn-sm btn-danger">Remove</a>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+{% block content %}
+<div class="bg-porcelain min-h-screen pb-24 relative overflow-hidden">
+    <!-- Sophisticated Background Pattern -->
+    <div class="absolute inset-0 z-0 opacity-5 pointer-events-none">
+        <div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(#1B4332_1px,transparent_1px)] [background-size:48px_48px]"></div>
     </div>
 
-    <div class="total-price mb-3">Total: ₹{{ total_price }}</div>
-
-    <div class="text-end mb-5">
-      <button type="submit" class="btn btn-primary">Update Cart</button>
-    </div>
-  </form>
-
-  <!-- Shipping & Payment Form -->
-  <div class="form-container">
-    <h3>🚚 Shipping & Payment</h3>
-    <form method="post" action="{% url 'place_order' %}" id="order-form">
-      {% csrf_token %}
-
-      {% if form.errors %}
-        <div class="alert alert-danger">{{ form.errors }}</div>
-      {% endif %}
-
-      <div class="mb-3">
-        <label for="id_full_name" class="form-label">Full Name</label>
-        {{ form.full_name|add_class:"form-control" }}
-      </div>
-
-      <div class="mb-3">
-        <label for="id_email" class="form-label">Email</label>
-        {{ form.email|add_class:"form-control" }}
-      </div>
-
-      <div class="mb-3">
-        <label for="id_phone" class="form-label">Phone</label>
-        {{ form.phone|add_class:"form-control" }}
-      </div>
-
-      <div class="mb-3">
-        <label for="id_address" class="form-label">Address</label>
-        {{ form.address|add_class:"form-control" }}
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label">Payment Method</label>
-        <div>
-          {% for radio in form.payment_method %}
-            <div class="form-check">
-              {{ radio.tag }} {{ radio.choice_label }}
-            </div>
-          {% endfor %}
+    <!-- Header Section -->
+    <section class="relative pt-12 pb-8 px-6 text-center z-10">
+        <div class="max-w-4xl mx-auto space-y-4">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-forest font-manrope">
+                Secure <span class="text-forest/40 italic">Checkout.</span>
+            </h1>
+            <p class="text-forest/60 font-inter max-w-2xl mx-auto">
+                Review your selected produce and finalize your shipping details.
+            </p>
         </div>
-      </div>
+    </section>
 
-      <div class="text-end">
-        <button type="submit" id="place-order-btn" class="btn btn-success">Place Order</button>
-      </div>
-    </form>
-  </div>
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-6 relative z-10 mt-8">
+        {% if cart_items %}
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+            
+            <!-- Left Column: Cart Items -->
+            <div class="lg:col-span-7 space-y-8">
+                <form method="post" action="{% url 'update_cart' %}">
+                    {% csrf_token %}
+                    
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-forest font-manrope">Your Tray</h2>
+                        <button type="submit" class="text-xs font-bold text-terracotta hover:text-terracotta/80 uppercase tracking-widest flex items-center gap-2">
+                            <i class="fas fa-sync-alt"></i> Update Quantities
+                        </button>
+                    </div>
 
-  {% else %}
-    <div class="alert alert-info text-center mt-4">
-      Your cart is empty. <a href="{% url 'product_list' %}">Browse products →</a>
+                    <div class="space-y-4">
+                        {% for item in cart_items %}
+                        <div class="glass-card !bg-white/80 p-6 flex flex-col md:flex-row items-start md:items-center gap-6 transition-all hover:shadow-lg">
+                            
+                            <!-- Product Image / Icon Placeholder -->
+                            <div class="w-20 h-20 rounded-xl bg-forest/5 flex items-center justify-center shrink-0 border border-forest/10 overflow-hidden">
+                                {% if item.product.images.all %}
+                                    <img src="{{ item.product.images.all.0.image.url }}" alt="{{ item.product.name }}" class="w-full h-full object-cover">
+                                {% else %}
+                                    <i class="fas fa-leaf text-2xl text-forest/20"></i>
+                                {% endif %}
+                            </div>
+
+                            <!-- Product Details -->
+                            <div class="flex-grow space-y-1">
+                                <h3 class="text-lg font-bold text-forest">{{ item.product.name }}</h3>
+                                <p class="text-xs font-bold text-forest/40 uppercase tracking-widest">₹{{ item.product.price_per_unit }} / {{ item.product.unit|default:"unit" }}</p>
+                            </div>
+
+                            <!-- Quantity & Unit Controls -->
+                            <div class="flex flex-col gap-2 shrink-0 w-full md:w-auto">
+                                <div class="flex items-center gap-2">
+                                    <input type="number" name="quantity_{{ item.id }}" value="{{ item.quantity }}" min="1" 
+                                           class="w-20 bg-white border border-forest/10 rounded-lg px-3 py-2 text-forest text-center font-bold focus:ring-1 focus:ring-forest outline-none">
+                                    <input type="text" name="unit_{{ item.id }}" value="{{ item.unit|default:item.product.unit }}" 
+                                           class="w-20 bg-white border border-forest/10 rounded-lg px-3 py-2 text-forest/60 text-center font-bold text-sm focus:ring-1 focus:ring-forest outline-none">
+                                </div>
+                                <p class="text-sm font-extrabold text-forest text-right">Total: ₹{{ item.item_total_price }}</p>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="shrink-0 flex items-center justify-end">
+                                <a href="{% url 'delete_cart_item' item.id %}" class="w-10 h-10 rounded-full bg-terracotta/10 text-terracotta flex items-center justify-center hover:bg-terracotta hover:text-white transition-colors" title="Remove Item">
+                                    <i class="fas fa-trash-alt text-sm"></i>
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </form>
+            </div>
+
+            <!-- Right Column: Shipping & Payment Summary -->
+            <div class="lg:col-span-5 order-1 lg:order-none mb-12 lg:mb-0">
+                <div class="glass-card !bg-white/90 p-8 shadow-xl sticky top-28">
+                    <h3 class="text-xl font-bold text-forest font-manrope mb-6 flex items-center gap-3">
+                        <i class="fas fa-truck text-forest/60"></i> Shipping Details
+                    </h3>
+
+                    <form method="post" action="{% url 'place_order' %}" id="order-form" class="space-y-6">
+                        {% csrf_token %}
+                        
+                        {% if form.errors %}
+                            <div class="p-4 bg-terracotta/10 rounded-xl border border-terracotta/20 text-sm text-terracotta mb-6">
+                                {{ form.errors }}
+                            </div>
+                        {% endif %}
+
+                        <div class="space-y-4">
+                            <!-- Full Name -->
+                            <div class="space-y-1 group">
+                                <label class="text-[10px] font-bold text-forest uppercase tracking-widest pl-1">Full Name</label>
+                                {% render_field form.full_name class="w-full bg-white/50 border border-forest/10 rounded-xl px-4 py-3 text-forest focus:ring-2 focus:ring-forest transition-all outline-none text-sm placeholder:text-forest/30" placeholder="John Doe" %}
+                            </div>
+
+                            <!-- Email & Phone Grid -->
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="space-y-1 group">
+                                    <label class="text-[10px] font-bold text-forest uppercase tracking-widest pl-1">Email</label>
+                                    {% render_field form.email class="w-full bg-white/50 border border-forest/10 rounded-xl px-4 py-3 text-forest focus:ring-2 focus:ring-forest transition-all outline-none text-sm placeholder:text-forest/30" placeholder="john@example.com" %}
+                                </div>
+                                <div class="space-y-1 group">
+                                    <label class="text-[10px] font-bold text-forest uppercase tracking-widest pl-1">Phone</label>
+                                    {% render_field form.phone class="w-full bg-white/50 border border-forest/10 rounded-xl px-4 py-3 text-forest focus:ring-2 focus:ring-forest transition-all outline-none text-sm placeholder:text-forest/30" placeholder="+91..." %}
+                                </div>
+                            </div>
+
+                            <!-- Address -->
+                            <div class="space-y-1 group">
+                                <label class="text-[10px] font-bold text-forest uppercase tracking-widest pl-1">Delivery Address</label>
+                                {% render_field form.address class="w-full bg-white/50 border border-forest/10 rounded-xl px-4 py-3 text-forest focus:ring-2 focus:ring-forest transition-all outline-none text-sm placeholder:text-forest/30 min-h-[80px] resize-none" placeholder="Enter complete address..." %}
+                            </div>
+
+                            <!-- Payment Method -->
+                            <div class="pt-4 border-t border-forest/5 space-y-4">
+                                <label class="text-[10px] font-bold text-forest uppercase tracking-widest pl-1">Payment Method</label>
+                                <div class="space-y-2">
+                                    {% for radio in form.payment_method %}
+                                    <label class="flex items-center gap-3 p-3 rounded-xl border border-forest/10 hover:bg-forest/5 transition-colors cursor-pointer bg-white">
+                                        {{ radio.tag }}
+                                        <span class="text-sm font-bold text-forest">{{ radio.choice_label }}</span>
+                                    </label>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Total & Submit -->
+                        <div class="pt-6 border-t border-forest/10 space-y-6">
+                            <div class="flex justify-between items-end">
+                                <span class="text-sm font-bold text-forest/60 uppercase tracking-widest">Order Total</span>
+                                <span class="text-3xl font-extrabold text-forest tracking-tighter">₹{{ total_price }}</span>
+                            </div>
+                            
+                            <button type="submit" id="place-order-btn" class="w-full btn-primary !py-4 flex items-center justify-center gap-3 group relative overflow-hidden">
+                                <span class="relative z-10 flex items-center gap-2">
+                                    Confirm Order <i class="fas fa-check-circle group-hover:scale-110 transition-transform"></i>
+                                </span>
+                                <!-- Shiny effect -->
+                                <div class="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-12"></div>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+        </div>
+        {% else %}
+        <!-- Empty State -->
+        <div class="flex justify-center items-center py-20 animate-fade-in">
+            <div class="glass-card max-w-md w-full p-10 text-center space-y-6">
+                <div class="w-24 h-24 rounded-full bg-forest/5 mx-auto flex items-center justify-center text-forest text-4xl mb-4">
+                    <i class="fas fa-shopping-basket"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-forest font-manrope">Your tray is empty</h3>
+                <p class="text-forest/60 text-sm">Looks like you haven't added any fresh produce yet.</p>
+                <div class="pt-4">
+                    <a href="{% url 'product_list' %}" class="inline-flex items-center gap-2 btn-primary !px-8">
+                        Explore Market <i class="fas fa-arrow-right text-sm"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
     </div>
-  {% endif %}
 </div>
 
+<style>
+    @keyframes fade-in {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in { animation: fade-in 0.8s ease-out forwards; }
+    
+    /* Custom Styling for Django Radio Inputs */
+    input[type="radio"] {
+        accent-color: #1B4332;
+        width: 1rem;
+        height: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
 <!-- Razorpay -->
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
@@ -143,16 +208,20 @@
     // If Online chosen, intercept submit and open Razorpay
     if (method === 'online') {
       e.preventDefault();
+      
+      const originalText = placeBtn.innerHTML;
+      placeBtn.innerHTML = '<span class="flex items-center gap-3 justify-center"><i class="fas fa-circle-notch animate-spin"></i> Initialising Gateway...</span>';
+      placeBtn.disabled = true;
 
-      // amount in paise passed from view context
       const amountPaise = {{ amount_in_paise|default:0 }};
 
       if (!amountPaise || amountPaise <= 0) {
-        alert('Invalid order amount.');
+        Swal.fire({ icon: 'error', title: 'Invalid Amount', text: 'Order amount must be greater than zero.'});
+        placeBtn.innerHTML = originalText;
+        placeBtn.disabled = false;
         return;
       }
 
-      // Create Razorpay order via AJAX
       fetch("{% url 'create_razorpay_order' %}", {
         method: 'POST',
         headers: {
@@ -171,32 +240,47 @@
           key: "{{ RAZORPAY_KEY_ID }}",
           amount: data.amount,
           currency: data.currency,
-          name: "Farm Market",
-          description: "Order Payment",
+          name: "FarmDirect",
+          description: "Premium Agricultural Produce",
+          image: "https://cdn-icons-png.flaticon.com/512/1864/1864835.png",
           order_id: data.id,
           handler: function(response) {
-            // append razorpay fields to the form and submit
+            placeBtn.innerHTML = '<span class="flex items-center gap-3 justify-center"><i class="fas fa-check"></i> Securing Order...</span>';
             const form = document.getElementById('order-form');
             form.insertAdjacentHTML('beforeend', '<input type="hidden" name="razorpay_payment_id" value="' + response.razorpay_payment_id + '">');
             form.insertAdjacentHTML('beforeend', '<input type="hidden" name="razorpay_order_id" value="' + response.razorpay_order_id + '">');
             form.insertAdjacentHTML('beforeend', '<input type="hidden" name="razorpay_signature" value="' + response.razorpay_signature + '">');
             form.submit();
           },
-          theme: { color: "#3399cc" }
+          prefill: {
+              name: document.getElementById('id_full_name').value || "",
+              email: document.getElementById('id_email').value || "",
+              contact: document.getElementById('id_phone').value || ""
+          },
+          theme: { color: "#1B4332" },
+          modal: {
+              ondismiss: function() {
+                  placeBtn.innerHTML = originalText;
+                  placeBtn.disabled = false;
+              }
+          }
         };
         const rzp = new Razorpay(options);
         rzp.open();
       })
       .catch(err => {
         console.error(err);
-        alert('Could not start payment. Try again later.');
+        Swal.fire({
+            icon: 'error',
+            title: 'Gateway Error',
+            text: 'Could not connect to the payment gateway. Please try again.',
+            confirmButtonColor: '#BC4749'
+        });
+        placeBtn.innerHTML = originalText;
+        placeBtn.disabled = false;
       });
     }
-    // else allow normal submit for COD
   });
 })();
 </script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+{% endblock %}

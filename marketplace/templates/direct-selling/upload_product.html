@@ -1,139 +1,138 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Upload Your Crop</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <style>
-    body {
-      background-color: #eef2f7;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      font-family: 'Segoe UI', sans-serif;
-      padding: 20px;
-    }
-    .upload-container {
-      background-color: #ffffff;
-      padding: 35px 40px;
-      border-radius: 15px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-      max-width: 500px;
-      width: 100%;
-    }
-    h2 {
-      font-weight: 700;
-      color: #2c3e50;
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    label {
-      font-weight: 600;
-      margin-bottom: 5px;
-      display: block;
-      color: #333;
-    }
-    input[type="text"],
-    input[type="number"],
-    input[type="file"],
-    textarea,
-    select {
-      width: 100%;
-      padding: 10px 14px;
-      margin-bottom: 15px;
-      border: 1.5px solid #ced4da;
-      border-radius: 10px;
-      font-size: 1rem;
-      background-color: #f9f9f9;
-      transition: border-color 0.3s ease;
-    }
-    input:focus,
-    textarea:focus,
-    select:focus {
-      border-color: #198754;
-      outline: none;
-      background-color: #fff;
-      box-shadow: 0 0 5px rgba(25, 135, 84, 0.3);
-    }
-    .btn-upload {
-      background-color: #198754;
-      border: none;
-      border-radius: 12px;
-      padding: 12px 0;
-      width: 100%;
-      font-size: 1.15rem;
-      font-weight: 600;
-      color: #fff;
-      transition: background-color 0.3s ease;
-    }
-    .btn-upload:hover {
-      background-color: #145c32;
-    }
-    .home-button {
-      text-align: right;
-      margin-bottom: 20px;
-    }
-    .home-button a {
-      background-color: #2e7d32;
-      color: white;
-      padding: 10px 18px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: bold;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-      transition: background-color 0.3s ease;
-    }
-    .home-button a:hover {
-      background-color: #1b5e20;
-    }
-  </style>
-</head>
-<body>
-  <div class="upload-container">
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
 
-    <div class="home-button">
-      {% if user.is_authenticated %}
-        {% if user.userprofile.role == "farmer" %}
-          <a href="{% url 'farmer_dashboard' %}">🏠 Home</a>
-        {% elif user.userprofile.role == "buyer" %}
-          <a href="{% url 'buyer_dashboard' %}">🏠 Home</a>
-        {% else %}
-          <a href="{% url 'home' %}">🏠 Home</a>
-        {% endif %}
-      {% else %}
-        <a href="{% url 'home' %}">🏠 Home</a>
-      {% endif %}
+{% block title %}Upload Crop | FarmDirect{% endblock %}
+
+{% block content %}
+<div class="bg-porcelain min-h-screen py-24 relative overflow-hidden flex items-center justify-center">
+    <!-- Sophisticated Background Pattern -->
+    <div class="absolute inset-0 z-0 opacity-5 pointer-events-none">
+        <div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(#1B4332_1px,transparent_1px)] [background-size:48px_48px]"></div>
     </div>
 
-    <h2>Upload Your Crop</h2>
+    <!-- Main Content -->
+    <div class="max-w-2xl w-full mx-auto px-6 relative z-10">
+        
+        <div class="glass-card !bg-white/95 p-10 lg:p-12 shadow-2xl animate-fade-in relative">
+            <!-- Decorative Icon -->
+            <div class="absolute -top-10 left-1/2 -translate-x-1/2">
+                <div class="w-20 h-20 bg-forest rounded-full flex items-center justify-center shadow-lg border-4 border-white text-white text-3xl">
+                    <i class="fas fa-seedling"></i>
+                </div>
+            </div>
 
-    <form method="POST" enctype="multipart/form-data">
-      {% csrf_token %}
+            <!-- Header -->
+            <div class="text-center mb-10 pt-6">
+                <h1 class="text-3xl lg:text-4xl font-extrabold text-forest font-manrope">Upload Your <span class="italic text-forest/50">Crop.</span></h1>
+                <p class="text-forest/60 text-sm mt-2">Add details and images of your produce to start selling directly to trusted buyers.</p>
+            </div>
 
-      {% for field in form %}
-        <div class="mb-3">
-          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-          {{ field }}
-          {% if field.errors %}
-            <div class="text-danger">{{ field.errors }}</div>
-          {% endif %}
+            <!-- Form -->
+            <form method="POST" enctype="multipart/form-data" class="space-y-6">
+                {% csrf_token %}
+
+                {% if form.errors %}
+                    <div class="p-4 bg-terracotta/10 rounded-xl border border-terracotta/20 text-sm text-terracotta mb-6 flex flex-col gap-2">
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <p><i class="fas fa-exclamation-circle mr-2"></i><strong>{{ field.label }}:</strong> {{ error }}</p>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}
+                            <p><i class="fas fa-exclamation-circle mr-2"></i>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- Standard Fields (Excluding Images) -->
+                <div class="space-y-5">
+                    {% for field in form %}
+                        {% if field.name != 'images' %}
+                            <div class="space-y-1">
+                                <label for="{{ field.id_for_label }}" class="text-[10px] font-bold text-forest py-2 uppercase tracking-widest pl-1">
+                                    {{ field.label }}
+                                </label>
+                                
+                                {% if field.field.widget.input_type == 'select' %}
+                                    <div class="relative">
+                                        {% render_field field class="appearance-none w-full bg-white/50 border border-forest/10 rounded-xl px-4 py-3 text-forest focus:ring-2 focus:ring-forest transition-all outline-none text-sm placeholder:text-forest/30 cursor-pointer" %}
+                                        <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-forest/40 pointer-events-none text-xs"></i>
+                                    </div>
+                                {% elif field.field.widget.input_type == 'textarea' %}
+                                    {% render_field field class="w-full bg-white/50 border border-forest/10 rounded-xl px-4 py-3 text-forest focus:ring-2 focus:ring-forest transition-all outline-none text-sm placeholder:text-forest/30 min-h-[100px] resize-none" %}
+                                {% else %}
+                                    {% render_field field class="w-full bg-white/50 border border-forest/10 rounded-xl px-4 py-3 text-forest focus:ring-2 focus:ring-forest transition-all outline-none text-sm placeholder:text-forest/30" %}
+                                {% endif %}
+                                
+                                {% if field.help_text %}
+                                    <p class="text-[10px] text-forest/40 pl-1">{{ field.help_text }}</p>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+
+                    <!-- Multiple Image Upload (Custom Field Processing) -->
+                    <div class="space-y-1 pt-2">
+                        <label for="id_images" class="text-[10px] font-bold text-forest uppercase tracking-widest pl-1">Product Images</label>
+                        <div class="relative group mt-2">
+                            <!-- Drag & Drop Visual Box -->
+                            <div class="w-full border-2 border-dashed border-forest/20 rounded-2xl p-8 bg-forest/5 flex flex-col items-center justify-center text-center group-hover:bg-forest/10 group-hover:border-forest/40 transition-colors cursor-pointer relative overflow-hidden">
+                                <i class="fas fa-cloud-upload-alt text-4xl text-forest/30 group-hover:text-forest/60 transition-colors mb-3"></i>
+                                <span class="text-sm font-bold text-forest mb-1">Click to Upload Photos</span>
+                                <span class="text-[10px] uppercase tracking-widest text-forest/40 font-bold">JPEG, PNG • Max 5MB</span>
+                                
+                                <!-- Invisible Input Overlaying The Box -->
+                                <input type="file" name="images" id="id_images" multiple required 
+                                       class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                       onchange="updateFileCount(this)">
+                            </div>
+                            <!-- Helper text updated via JS -->
+                            <p id="file-count-text" class="text-xs text-forest/60 text-center mt-2 font-bold opacity-0 transition-opacity">No files selected</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="pt-8 mt-8 border-t border-forest/10 flex flex-col md:flex-row items-center justify-between gap-4">
+                    <a href="{% url 'farmer_dashboard' %}" class="text-sm font-bold text-forest/40 hover:text-terracotta transition-colors order-2 md:order-1">
+                        Cancel Upload
+                    </a>
+
+                    <button type="submit" class="w-full md:w-auto btn-primary !py-3 !px-10 flex items-center justify-center gap-3 group relative overflow-hidden order-1 md:order-2">
+                        <span class="relative z-10 flex items-center gap-2">
+                            Publish Crop <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                        </span>
+                        <!-- Shiny effect -->
+                        <div class="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-12"></div>
+                    </button>
+                </div>
+            </form>
         </div>
-      {% endfor %}
+    </div>
+</div>
 
-      <!-- ✅ Multiple image input -->
-      <div class="mb-3">
-        <label for="id_images">Upload Product Images</label>
-        <input type="file" name="images" id="id_images" class="form-control" multiple required>
-        <small class="text-muted">You can select multiple images (JPEG/PNG)</small>
-      </div>
+<style>
+    @keyframes fade-in {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in { animation: fade-in 0.8s ease-out forwards; }
+</style>
 
-      <button type="submit" class="btn btn-upload">Upload Product</button>
-    </form>
-
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+<script>
+    // Simple JS to update the UI when files are selected
+    function updateFileCount(input) {
+        const textElement = document.getElementById('file-count-text');
+        
+        if (input.files && input.files.length > 0) {
+            textElement.textContent = input.files.length + ' image(s) selected for upload.';
+            textElement.classList.remove('opacity-0');
+            textElement.classList.add('text-forest', 'opacity-100');
+        } else {
+            textElement.classList.remove('opacity-100');
+            textElement.classList.add('opacity-0');
+        }
+    }
+</script>
+{% endblock %}

@@ -1,121 +1,150 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Orders</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+{% extends "base.html" %}
+{% load static %}
 
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f9fff9;
-        }
+{% block title %}Order Ledger | FarmDirect{% endblock %}
 
-        /* Navbar */
-        .navbar {
-            background-color: #2e7d32;
-            padding: 12px 0;
-        }
-        .navbar a {
-            color: white !important;
-            font-weight: 500;
-        }
-        .navbar a:hover {
-            opacity: 0.8;
-        }
-
-        /* Heading */
-        h1 {
-            font-weight: bold;
-            color: #2e7d32;
-        }
-
-        /* Table Styling */
-        table {
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        thead {
-            background-color: #2e7d32 !important;
-            color: white;
-        }
-        tbody tr:hover {
-            background-color: #e8f5e9;
-        }
-
-        /* Back Home Button */
-        .home-btn {
-            background-color: #2e7d32;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 500;
-        }
-        .home-btn:hover {
-            background-color: #1b5e20;
-        }
-    </style>
-</head>
-<body>
-
-<!-- Navbar -->
-<!-- <nav class="navbar navbar-expand-lg">
-    <div class="container">
-        <a class="navbar-brand text-white fw-bold" href="#">🌱 Farm Market</a>
-        
+{% block content %}
+<div class="bg-porcelain min-h-screen pb-24 relative overflow-hidden">
+    <!-- Sophisticated Background Pattern -->
+    <div class="absolute inset-0 z-0 opacity-5 pointer-events-none">
+        <div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(#1B4332_1px,transparent_1px)] [background-size:48px_48px]"></div>
     </div>
-</nav> -->
 
-<div class="container py-5">
-    <div class="mb-4">
-        {% if user.is_authenticated %}
-            {% if user.userprofile.role == "farmer" %}
-                <a href="{% url 'farmer_dashboard' %}" class="home-btn">🏠 Home</a>
-            {% elif user.userprofile.role == "buyer" %}
-                <a href="{% url 'buyer_dashboard' %}" class="home-btn">🏠 Home</a>
-            {% else %}
-                <a href="{% url 'home' %}" class="home-btn">🏠 Home</a>
-            {% endif %}
+    <!-- Header Section -->
+    <section class="relative pt-12 pb-8 px-6 text-center z-10">
+        <div class="max-w-4xl mx-auto space-y-4">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-forest font-manrope">
+                Order <span class="text-forest/40 italic">Ledger.</span>
+            </h1>
+            <p class="text-forest/60 font-inter max-w-2xl mx-auto">
+                Track your recent investments in high-yield agronomy produce.
+            </p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="max-w-5xl mx-auto px-6 relative z-10 mt-8">
+        {% if orders %}
+        <div class="space-y-6">
+            
+            <!-- Quick Stats -->
+            <div class="flex items-center justify-between mb-8 pb-4 border-b border-forest/10">
+                <h2 class="text-2xl font-bold text-forest font-manrope">Recent Transmissions</h2>
+                <span class="px-4 py-2 bg-white border border-forest/10 rounded-full text-xs font-bold text-forest uppercase tracking-widest shadow-sm">
+                    {{ orders.count }} Orders Found
+                </span>
+            </div>
+
+            <!-- Order Cards -->
+            <div class="grid grid-cols-1 gap-6">
+                {% for order in orders %}
+                <div class="glass-card !bg-white/80 p-6 md:p-8 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 relative">
+                    
+                    <!-- Top Ribbon / Date -->
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-forest/5 flex items-center justify-center text-forest/40 font-bold text-sm border border-forest/10">
+                                #{{ forloop.counter }}
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-bold text-forest/40 uppercase tracking-widest">Order Initialised</p>
+                                <p class="text-sm font-bold text-forest">{{ order.created_at|date:"d M Y, H:i" }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Status Badge -->
+                        <div>
+                            {% if order.status == "Completed" %}
+                                <span class="inline-flex items-center gap-2 px-4 py-1.5 bg-[#e0f8e9] text-[#2e7d32] border border-[#2e7d32]/20 text-xs font-bold uppercase tracking-widest rounded-full shadow-sm">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-[#2e7d32] animate-pulse"></span> {{ order.status }}
+                                </span>
+                            {% elif order.status == "Pending" %}
+                                <span class="inline-flex items-center gap-2 px-4 py-1.5 bg-amber-50 text-amber-700 border border-amber-700/20 text-xs font-bold uppercase tracking-widest rounded-full shadow-sm">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span> {{ order.status }}
+                                </span>
+                            {% else %}
+                                <span class="inline-flex items-center gap-2 px-4 py-1.5 bg-gray-100 text-gray-600 border border-gray-300 text-xs font-bold uppercase tracking-widest rounded-full shadow-sm">
+                                    {{ order.status }}
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Order Details Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                        
+                        <!-- Product Info -->
+                        <div class="md:col-span-5 flex items-center gap-4">
+                            <div class="w-16 h-16 rounded-xl bg-white border border-forest/10 shadow-sm flex items-center justify-center overflow-hidden shrink-0">
+                                {% if order.product.images.all %}
+                                    <img src="{{ order.product.images.all.0.image.url }}" alt="{{ order.product.name }}" class="w-full h-full object-cover">
+                                {% else %}
+                                    <i class="fas fa-box-open text-forest/20 text-2xl"></i>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-forest">{{ order.product.name }}</h3>
+                                <p class="text-xs font-bold text-forest/40 uppercase tracking-widest">Qty: {{ order.quantity }} {{ order.product.unit|default:"units" }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Payment & Price -->
+                        <div class="md:col-span-7 flex flex-wrap md:flex-nowrap items-center justify-between gap-6 p-4 md:p-6 bg-forest/5 rounded-xl border border-forest/10">
+                            
+                            <!-- Payment Method -->
+                            <div class="space-y-1">
+                                <p class="text-[10px] font-bold text-forest/40 uppercase tracking-widest flex items-center gap-1.5">
+                                    <i class="fas fa-credit-card text-forest/30"></i> Method
+                                </p>
+                                <p class="text-sm font-bold text-forest uppercase">{{ order.payment_method }}</p>
+                            </div>
+
+                            <!-- Payment Status -->
+                            <div class="space-y-1">
+                                <p class="text-[10px] font-bold text-forest/40 uppercase tracking-widest flex items-center gap-1.5">
+                                    <i class="fas fa-shield-alt text-forest/30"></i> Payment
+                                </p>
+                                <p class="text-sm font-bold text-forest">{{ order.payment_status }}</p>
+                            </div>
+
+                            <!-- Total -->
+                            <div class="text-right ml-auto">
+                                <p class="text-[10px] font-bold text-forest/40 uppercase tracking-widest mb-1">Total Value</p>
+                                <p class="text-2xl font-extrabold text-forest tracking-tight">₹{{ order.total_price }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                {% endfor %}
+            </div>
+
+        </div>
         {% else %}
-            <a href="{% url 'home' %}" class="home-btn">🏠 Home</a>
+        <!-- Empty State -->
+        <div class="flex justify-center items-center py-20 animate-fade-in">
+            <div class="glass-card max-w-md w-full p-10 text-center space-y-6">
+                <div class="w-24 h-24 rounded-full bg-forest/5 mx-auto flex items-center justify-center text-forest text-4xl mb-4">
+                    <i class="fas fa-receipt text-forest/30"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-forest font-manrope">No Records Found</h3>
+                <p class="text-forest/60 text-sm">Your order ledger is currently empty. Visit the market to secure top-tier agronomic produce.</p>
+                <div class="pt-4">
+                    <a href="{% url 'product_list' %}" class="inline-flex items-center gap-2 btn-primary !px-8">
+                        Explore Market <i class="fas fa-arrow-right text-sm"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
         {% endif %}
     </div>
-
-    <h1 class="mb-4">My Orders</h1>
-
-    {% if orders %}
-        <table class="table table-bordered shadow-sm bg-white">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Product</th>
-                    <th>Quantity</th>
-                    <th>Total Price</th>
-                    <th>Status</th>
-                    <th>Payment Method</th>
-                    <th>Order Date</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for order in orders %}
-                <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td>{{ order.product.name }}</td>
-                    <td>{{ order.quantity }}</td>
-                    <td>₹{{ order.total_price }}</td>
-                    <td>{{ order.status }}</td>
-                    <td>{{ order.payment_method }}</td>
-                    <td>{{ order.created_at|date:"d M Y H:i" }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <div class="alert alert-info">You have no orders yet.</div>
-    {% endif %}
 </div>
 
-</body>
-</html>
+<style>
+    @keyframes fade-in {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in { animation: fade-in 0.8s ease-out forwards; }
+</style>
+{% endblock %}
