@@ -74,6 +74,3 @@ Thumbs.db
 *.tmp
 *.bak
 *.swp
-
-# ML Models
-ml_models/yield_model.pkl
