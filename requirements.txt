@@ -21,7 +21,8 @@ joblib==1.5.0
 numpy==2.3.2
 pandas==2.2.3
 scikit-learn==1.6.1
-scipy==1.15.3
+# scipy==1.15.3
+python-3.11.9
 
 # NOTE: rpds-py and other Rust-backed packages may require a writable CARGO_HOME
 # or prebuilt wheels. If you need them, either set CARGO_HOME=/tmp/.cargo in the
