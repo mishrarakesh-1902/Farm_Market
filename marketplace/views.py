@@ -33,6 +33,7 @@ from django.urls import reverse
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 import json
+from ml_models.download_model import download_model
 from .models import (
     Product, ProductImage, Review, CartItem, Order,
     UserProfile, FarmerProfile, BuyerProfile, Crop, CropPrice,
@@ -986,6 +987,7 @@ def predict_crop(request):
     return render(request, 'marketplace/predict_crop.html', context)
 
 # Yield Prediction
+download_model()
 try:
     yield_model = joblib.load(os.path.join(settings.BASE_DIR, 'ml_models', 'yield_model.pkl'))
     yield_scaler = joblib.load(os.path.join(settings.BASE_DIR, 'ml_models', 'yield_scaler.pkl'))
