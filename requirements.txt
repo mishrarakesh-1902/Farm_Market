@@ -4,7 +4,6 @@ gunicorn==21.2.0
 psycopg2-binary==2.9.6
 dj-database-url==2.1.0
 python-dotenv==1.0.0
-python-decouple==3.8
 cloudinary==1.44.1
 django-cloudinary-storage==0.3.0
 django-widget-tweaks==1.5.0
@@ -14,13 +13,11 @@ python-json-logger==3.2.1
 whitenoise==6.5.0
 pymysql==1.1.0
 
-# ML and Payment Dependencies (REQUIRED for production views.py)
-razorpay==1.4.2
-joblib==1.5.0
-pandas==2.2.3
-numpy==2.3.2
-scipy==1.15.3
-scikit-learn==1.6.1
+# Optional / heavy packages (include only if your app requires ML or image processing)
+# numpy==2.3.2
+# scipy==1.15.3
+# scikit-learn==1.6.1
+# opencv-python==4.11.0.86
 
 # NOTE: rpds-py and other Rust-backed packages may require a writable CARGO_HOME
 # or prebuilt wheels. If you need them, either set CARGO_HOME=/tmp/.cargo in the

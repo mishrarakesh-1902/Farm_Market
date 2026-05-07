@@ -21,6 +21,7 @@ from .utils import send_welcome_email
 from .image_utils import compress_image, compress_images_batch
 
 import os
+from pathlib import Path
 import pickle
 import joblib
 import pandas as pd
@@ -990,15 +991,20 @@ def predict_crop(request):
     return render(request, 'marketplace/predict_crop.html', context)
 
 # Yield Prediction
-try:
-    yield_model = joblib.load(os.path.join(settings.BASE_DIR, 'ml_models', 'yield_model.pkl'))
-    yield_scaler = joblib.load(os.path.join(settings.BASE_DIR, 'ml_models', 'yield_scaler.pkl'))
-    le_crop = joblib.load(os.path.join(settings.BASE_DIR, 'ml_models', 'le_crop.pkl'))
-    le_season = joblib.load(os.path.join(settings.BASE_DIR, 'ml_models', 'le_season.pkl'))
-    le_state = joblib.load(os.path.join(settings.BASE_DIR, 'ml_models', 'le_state.pkl'))
-except Exception as e:
-    yield_model = yield_scaler = le_crop = le_season = le_state = None
-    print(f'Warning: Could not load yield models: {e}')
+
+def load_model_asset(filename, description):
+    model_path = Path(settings.BASE_DIR) / 'ml_models' / filename
+    try:
+        return joblib.load(model_path)
+    except Exception as e:
+        print(f'Warning: Could not load {description} from {model_path}: {e}')
+        return None
+
+yield_model = load_model_asset('yield_model.pkl', 'yield model')
+yield_scaler = load_model_asset('yield_scaler.pkl', 'yield scaler')
+le_crop = load_model_asset('le_crop.pkl', 'crop label encoder')
+le_season = load_model_asset('le_season.pkl', 'season label encoder')
+le_state = load_model_asset('le_state.pkl', 'state label encoder')
 
 @login_required
 def yeild_predict(request):
@@ -1040,19 +1046,25 @@ def yeild_predict(request):
                 fert_per_area, pest_per_area, historical_yield, rain_fert
             ]
 
-            # 4. Scale and Predict
-            X_scaled = yield_scaler.transform([features])
-            log_pred = yield_model.predict(X_scaled)[0]
-            
-            # 5. Inverse Log Transform (log1p -> expm1)
-            prediction = round(np.expm1(log_pred), 2)
-            
-            # 6. Farm Scale Projections
-            total_production = round(prediction * area, 2)
-            # Statistical confidence band (simulated based on model R2 of 99.7%)
-            conf_margin = prediction * 0.05
-            conf_low = round(max(0, prediction - conf_margin), 3)
-            conf_high = round(prediction + conf_margin, 3)
+            if not all([yield_model, yield_scaler, le_crop, le_season, le_state]):
+                messages.error(request, 'Yield prediction model assets are unavailable. Please try again later.')
+            else:
+                try:
+                    X_scaled = yield_scaler.transform([features])
+                    log_pred = yield_model.predict(X_scaled)[0]
+                    
+                    # 5. Inverse Log Transform (log1p -> expm1)
+                    prediction = round(np.expm1(log_pred), 2)
+                    
+                    # 6. Farm Scale Projections
+                    total_production = round(prediction * area, 2)
+                    # Statistical confidence band (simulated based on model R2 of 99.7%)
+                    conf_margin = prediction * 0.05
+                    conf_low = round(max(0, prediction - conf_margin), 3)
+                    conf_high = round(prediction + conf_margin, 3)
+                except Exception as e:
+                    messages.error(request, 'Unable to generate yield prediction at this time.')
+                    print(f'Yield prediction failed: {e}')
             
             form = YieldPredictionForm()
     else:
