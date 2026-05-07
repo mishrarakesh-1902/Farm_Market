@@ -928,9 +928,13 @@ def crop_price_view(request):
 import joblib
 
 # Crop Prediction
-crop_scaler = joblib.load(os.path.join(settings.BASE_DIR, 'ml_models', 'scaler.pkl'))
-crop_model = joblib.load(os.path.join(settings.BASE_DIR, 'ml_models', 'crop_model.pkl'))
-crop_label_encoder = joblib.load(os.path.join(settings.BASE_DIR, 'ml_models', 'label_encoder.pkl'))
+try:
+    crop_scaler = joblib.load(os.path.join(settings.BASE_DIR, 'ml_models', 'scaler.pkl'))
+    crop_model = joblib.load(os.path.join(settings.BASE_DIR, 'ml_models', 'crop_model.pkl'))
+    crop_label_encoder = joblib.load(os.path.join(settings.BASE_DIR, 'ml_models', 'label_encoder.pkl'))
+except Exception as e:
+    crop_scaler = crop_model = crop_label_encoder = None
+    print(f'Warning: Could not load crop models: {e}')
 
 @login_required
 def predict_crop(request):
@@ -992,12 +996,14 @@ try:
     le_crop = joblib.load(os.path.join(settings.BASE_DIR, 'ml_models', 'le_crop.pkl'))
     le_season = joblib.load(os.path.join(settings.BASE_DIR, 'ml_models', 'le_season.pkl'))
     le_state = joblib.load(os.path.join(settings.BASE_DIR, 'ml_models', 'le_state.pkl'))
-except FileNotFoundError:
+except Exception as e:
     yield_model = yield_scaler = le_crop = le_season = le_state = None
+    print(f'Warning: Could not load yield models: {e}')
 
 @login_required
 def yeild_predict(request):
     prediction, entered_data = None, None
+    total_production, conf_low, conf_high = None, None, None
     if request.method == 'POST':
         form = YieldPredictionForm(request.POST)
         if form.is_valid():

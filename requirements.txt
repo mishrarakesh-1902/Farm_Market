@@ -18,9 +18,9 @@ pymysql==1.1.0
 razorpay==1.4.2
 joblib==1.5.0
 pandas==2.2.3
-numpy==1.26.4
-scipy==1.11.4
-scikit-learn==1.4.2
+numpy==2.3.2
+scipy==1.15.3
+scikit-learn==1.6.1
 
 # NOTE: rpds-py and other Rust-backed packages may require a writable CARGO_HOME
 # or prebuilt wheels. If you need them, either set CARGO_HOME=/tmp/.cargo in the
