@@ -946,7 +946,11 @@ def predict_crop(request):
         form = CropInputForm(request.POST)
         if form.is_valid():
             input_values = form.cleaned_data
-            # Feature order: ["N", "P", "K", "temperature", "humidity", "ph", "rainfall"]
+            # Safety check for loaded models
+            if not all([crop_scaler, crop_model, crop_label_encoder]):
+                messages.error(request, 'Crop recommendation model is currently unavailable.')
+                return render(request, 'marketplace/predict_crop.html', {'form': form})
+
             data = [
                 input_values['nitrogen'], 
                 input_values['phosphorus'],
@@ -995,9 +999,15 @@ def predict_crop(request):
 def load_model_asset(filename, description):
     model_path = Path(settings.BASE_DIR) / 'ml_models' / filename
     try:
+        if not model_path.exists():
+            print(f"Error: {description} file NOT FOUND at {model_path}")
+            return None
         return joblib.load(model_path)
     except Exception as e:
-        print(f'Warning: Could not load {description} from {model_path}: {e}')
+        print(f'Critical Error: Could not load {description} from {model_path}: {e}')
+        # Log the specific error type to help diagnosis
+        import traceback
+        traceback.print_exc()
         return None
 
 yield_model = load_model_asset('yield_model.pkl', 'yield model')
@@ -1017,11 +1027,17 @@ def yeild_predict(request):
             
             # 1. Encode Categorical variables
             try:
-                crop_enc = le_crop.transform([entered_data['crop']])[0]
-                season_enc = le_season.transform([entered_data['season']])[0]
-                state_enc = le_state.transform([entered_data['state']])[0]
+                # Extra safety checks for encoders
+                crop_val = entered_data['crop']
+                season_val = entered_data['season']
+                state_val = entered_data['state']
+
+                crop_enc = le_crop.transform([crop_val])[0] if le_crop else 0
+                season_enc = le_season.transform([season_val])[0] if le_season else 0
+                state_enc = le_state.transform([state_val])[0] if le_state else 0
             except Exception as e:
                 # Fallback if encoder fails
+                print(f"Encoding failed for yield prediction: {e}")
                 crop_enc = season_enc = state_enc = 0
 
             # 2. Extract Numerical variables
@@ -1046,7 +1062,7 @@ def yeild_predict(request):
                 fert_per_area, pest_per_area, historical_yield, rain_fert
             ]
 
-            if not all([yield_model, yield_scaler, le_crop, le_season, le_state]):
+            if not yield_model or not yield_scaler:
                 messages.error(request, 'Yield prediction model assets are unavailable. Please try again later.')
             else:
                 try:

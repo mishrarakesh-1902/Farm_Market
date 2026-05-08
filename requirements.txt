@@ -12,11 +12,14 @@ requests==2.32.3
 python-json-logger==3.2.1
 whitenoise==6.5.0
 pymysql==1.1.0
+razorpay==1.4.2
 
-# Optional / heavy packages (include only if your app requires ML or image processing)
-# numpy==2.3.2
-# scipy==1.15.3
-# scikit-learn==1.6.1
+# Machine Learning and Data Processing (Required for AI Suite)
+numpy==2.3.2
+scipy==1.15.3
+scikit-learn==1.6.1
+pandas==2.2.3
+joblib==1.5.0
 # opencv-python==4.11.0.86
 
 # NOTE: rpds-py and other Rust-backed packages may require a writable CARGO_HOME
