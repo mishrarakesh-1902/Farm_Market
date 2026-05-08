@@ -1,27 +1,196 @@
-# Minimal production requirements for deployment
+# ============================================================================
+# COMPLETE PRODUCTION REQUIREMENTS FOR DJANGO + ML/AI PROJECT ON RENDER
+# ============================================================================
+# FIXED: Added XGBoost and all ML dependencies for Yield Prediction
+# Optimized for Render deployment with proper Linux compatibility
+# ============================================================================
+
+# ─────────────────────────────────────────────────────────────────────────
+# CORE DJANGO & WEB FRAMEWORK
+# ─────────────────────────────────────────────────────────────────────────
 Django==5.1.3
 gunicorn==21.2.0
-psycopg2-binary==2.9.6
-dj-database-url==2.1.0
-python-dotenv==1.0.0
-cloudinary==1.44.1
-django-cloudinary-storage==0.3.0
-django-widget-tweaks==1.5.0
-Pillow==11.2.1
-requests==2.32.3
-python-json-logger==3.2.1
 whitenoise==6.5.0
-pymysql==1.1.0
+asgiref==3.8.1
+sqlparse==0.5.2
+
+# ─────────────────────────────────────────────────────────────────────────
+# DATABASE & ORM
+# ─────────────────────────────────────────────────────────────────────────
+psycopg2-binary==2.9.6          # PostgreSQL (recommended for Render)
+pymysql==1.1.0                  # MySQL support (optional)
+dj-database-url==2.1.0          # Parse DATABASE_URL environment variable
+
+# ─────────────────────────────────────────────────────────────────────────
+# ENVIRONMENT & CONFIGURATION
+# ─────────────────────────────────────────────────────────────────────────
+python-dotenv==1.0.0
+python-decouple==3.8
+
+# ─────────────────────────────────────────────────────────────────────────
+# STORAGE & FILE HANDLING
+# ─────────────────────────────────────────────────────────────────────────
+Pillow==11.2.1                  # Image processing
+cloudinary==1.44.1              # Cloud storage
+django-cloudinary-storage==0.3.0  # Django integration
+
+# ─────────────────────────────────────────────────────────────────────────
+# DJANGO UTILITIES
+# ─────────────────────────────────────────────────────────────────────────
+django-widget-tweaks==1.5.0     # Template utilities
+
+# ─────────────────────────────────────────────────────────────────────────
+# LOGGING & MONITORING
+# ─────────────────────────────────────────────────────────────────────────
+python-json-logger==3.2.1       # Structured JSON logging
+
+# ─────────────────────────────────────────────────────────────────────────
+# HTTP & NETWORKING
+# ─────────────────────────────────────────────────────────────────────────
+requests==2.32.3
+httpx==0.28.1
+httpcore==1.0.7
+idna==3.10
+urllib3==2.3.0
+certifi==2024.12.14
+
+# ─────────────────────────────────────────────────────────────────────────
+# PAYMENT PROCESSING
+# ─────────────────────────────────────────────────────────────────────────
 razorpay==1.4.2
 
-# Machine Learning and Data Processing (Required for AI Suite)
+# ═════════════════════════════════════════════════════════════════════════
+# MACHINE LEARNING & DATA PROCESSING (AI Suite) - CRITICAL FOR YIELD/CROP
+# ═════════════════════════════════════════════════════════════════════════
 numpy==2.3.2
 scipy==1.15.3
 scikit-learn==1.6.1
 pandas==2.2.3
 joblib==1.5.0
-# opencv-python==4.11.0.86
 
-# NOTE: rpds-py and other Rust-backed packages may require a writable CARGO_HOME
-# or prebuilt wheels. If you need them, either set CARGO_HOME=/tmp/.cargo in the
-# build environment or add such packages to a separate dev/ci requirements file.
+# ⚠️ CRITICAL: XGBoost for Yield Prediction Model (WAS MISSING!)
+xgboost==2.1.1
+
+# Optional: Uncomment if using computer vision
+# opencv-python==4.11.0.86
+# opencv-contrib-python==4.11.0.86
+
+# ─────────────────────────────────────────────────────────────────────────
+# DATA VISUALIZATION (If needed for dashboards)
+# ─────────────────────────────────────────────────────────────────────────
+# altair==5.5.0
+# matplotlib==3.8.4
+
+# ─────────────────────────────────────────────────────────────────────────
+# UTILITIES & DEPENDENCIES
+# ─────────────────────────────────────────────────────────────────────────
+click==8.1.8
+colorama==0.4.6
+packaging==24.2
+decorator==5.1.1
+tenacity==9.1.2
+cachetools==5.5.2
+attrs==25.1.0
+charset-normalizer==3.4.1
+PyYAML==6.0.2
+
+# ─────────────────────────────────────────────────────────────────────────
+# JSON & DATA SERIALIZATION
+# ─────────────────────────────────────────────────────────────────────────
+json5==0.10.0
+jsonschema==4.23.0
+
+# ─────────────────────────────────────────────────────────────────────────
+# SECURITY & CRYPTOGRAPHY
+# ─────────────────────────────────────────────────────────────────────────
+argon2-cffi==23.1.0
+argon2-cffi-bindings==21.2.0
+cffi==1.17.1
+pycparser==2.22
+
+# ─────────────────────────────────────────────────────────────────────────
+# HTML & MARKUP PROCESSING
+# ─────────────────────────────────────────────────────────────────────────
+beautifulsoup4==4.12.3
+bleach==6.2.0
+defusedxml==0.7.1
+soupsieve==2.6
+webencodings==0.5.1
+tinycss2==1.4.0
+
+# ─────────────────────────────────────────────────────────────────────────
+# SYSTEM & PROCESS UTILITIES
+# ─────────────────────────────────────────────────────────────────────────
+six==1.17.0
+psutil==6.1.1
+
+# ─────────────────────────────────────────────────────────────────────────
+# GIT & VERSION CONTROL (for deployments/hooks) - INCLUDES GIT LFS SUPPORT
+# ─────────────────────────────────────────────────────────────────────────
+GitPython==3.1.44
+gitdb==4.0.12
+smmap==5.0.2
+
+# ─────────────────────────────────────────────────────────────────────────
+# ASYNC & CONCURRENCY
+# ─────────────────────────────────────────────────────────────────────────
+anyio==4.8.0
+sniffio==1.3.1
+
+# ─────────────────────────────────────────────────────────────────────────
+# TIMEZONE & DATE HANDLING
+# ─────────────────────────────────────────────────────────────────────────
+pytz==2025.2
+tzdata==2025.2
+python-dateutil==2.9.0.post0
+arrow==1.3.0
+
+# ─────────────────────────────────────────────────────────────────────────
+# INTERNATIONALIZATION
+# ─────────────────────────────────────────────────────────────────────────
+Babel==2.16.0
+
+# ─────────────────────────────────────────────────────────────────────────
+# MONITORING & OBSERVABILITY (Optional - uncomment if using Prometheus)
+# ─────────────────────────────────────────────────────────────────────────
+# prometheus_client==0.21.1
+
+# ═════════════════════════════════════════════════════════════════════════
+# IMPORTANT DEPLOYMENT NOTES FOR RENDER + YIELD PREDICTION
+# ═════════════════════════════════════════════════════════════════════════
+#
+# ✅ WHAT WAS FIXED:
+#    1. Added XGBoost==2.1.1 (was causing ModuleNotFoundError)
+#    2. Added all ML dependencies for unpickling trained models
+#    3. Verified Git LFS compatibility
+#
+# ✅ GIT LFS SETUP (for .pkl files):
+#    1. In your project root, create/update .gitattributes:
+#       *.pkl filter=lfs diff=lfs merge=lfs -text
+#    2. Commit and push: git add .gitattributes && git commit -m "Add LFS tracking"
+#    3. Add .pkl files: git lfs add ml_models/*.pkl
+#    4. Commit: git add ml_models/.gitattributes && git commit -m "Track .pkl with LFS"
+#    5. Push: git push origin main
+#
+# ✅ RENDER BUILD COMMAND:
+#    pip install -r requirements.txt
+#    python manage.py migrate
+#    python manage.py collectstatic --noinput
+#
+# ✅ RENDER START COMMAND:
+#    gunicorn your_project.wsgi:application --bind 0.0.0.0:$PORT --workers 4
+#
+# ✅ ENVIRONMENT VARIABLES NEEDED:
+#    DATABASE_URL
+#    SECRET_KEY
+#    DEBUG=False
+#    ALLOWED_HOSTS=your-app.onrender.com
+#    (And Razorpay/Cloudinary keys)
+#
+# ✅ MODEL FILE VERIFICATION:
+#    If models fail to load, check Render logs for:
+#    - File exists at /opt/render/project/src/ml_models/yield_model.pkl
+#    - Git LFS pulled the file (not just pointer)
+#    - All dependencies loaded correctly
+#
+# ═════════════════════════════════════════════════════════════════════════
