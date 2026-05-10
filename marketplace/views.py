@@ -928,14 +928,22 @@ def crop_price_view(request):
 
 import joblib
 
-# Crop Prediction
-try:
-    crop_scaler = joblib.load(os.path.join(settings.BASE_DIR, 'ml_models', 'scaler.pkl'))
-    crop_model = joblib.load(os.path.join(settings.BASE_DIR, 'ml_models', 'crop_model.pkl'))
-    crop_label_encoder = joblib.load(os.path.join(settings.BASE_DIR, 'ml_models', 'label_encoder.pkl'))
-except Exception as e:
-    crop_scaler = crop_model = crop_label_encoder = None
-    print(f'Warning: Could not load crop models: {e}')
+# Crop Prediction Global Variables
+_crop_scaler = None
+_crop_model = None
+_crop_label_encoder = None
+
+def get_crop_models():
+    global _crop_scaler, _crop_model, _crop_label_encoder
+    if _crop_model is None:
+        try:
+            _crop_scaler = joblib.load(os.path.join(settings.BASE_DIR, 'ml_models', 'scaler.pkl'))
+            _crop_model = joblib.load(os.path.join(settings.BASE_DIR, 'ml_models', 'crop_model.pkl'))
+            _crop_label_encoder = joblib.load(os.path.join(settings.BASE_DIR, 'ml_models', 'label_encoder.pkl'))
+        except Exception as e:
+            _crop_scaler = _crop_model = _crop_label_encoder = None
+            print(f'Warning: Could not load crop models: {e}')
+    return _crop_scaler, _crop_model, _crop_label_encoder
 
 @login_required
 def predict_crop(request):
@@ -947,6 +955,7 @@ def predict_crop(request):
         if form.is_valid():
             input_values = form.cleaned_data
             # Safety check for loaded models
+            crop_scaler, crop_model, crop_label_encoder = get_crop_models()
             if not all([crop_scaler, crop_model, crop_label_encoder]):
                 messages.error(request, 'Crop recommendation model is currently unavailable.')
                 return render(request, 'marketplace/predict_crop.html', {'form': form})
@@ -1010,11 +1019,29 @@ def load_model_asset(filename, description):
         traceback.print_exc()
         return None
 
-yield_model = load_model_asset('yield_model.pkl', 'yield model')
-yield_scaler = load_model_asset('yield_scaler.pkl', 'yield scaler')
-le_crop = load_model_asset('le_crop.pkl', 'crop label encoder')
-le_season = load_model_asset('le_season.pkl', 'season label encoder')
-le_state = load_model_asset('le_state.pkl', 'state label encoder')
+# Yield Prediction Global Variables
+_yield_model = None
+_yield_scaler = None
+_le_crop = None
+_le_season = None
+_le_state = None
+
+def get_yield_models():
+    global _yield_model, _yield_scaler, _le_crop, _le_season, _le_state
+    if _yield_model is None:
+        try:
+            # Look for compressed model first to save memory (especially on Render)
+            compressed_path = Path(settings.BASE_DIR) / 'ml_models' / 'yield_model_compressed.pkl'
+            model_file = 'yield_model_compressed.pkl' if compressed_path.exists() else 'yield_model.pkl'
+            
+            _yield_model = load_model_asset(model_file, 'yield model')
+            _yield_scaler = load_model_asset('yield_scaler.pkl', 'yield scaler')
+            _le_crop = load_model_asset('le_crop.pkl', 'crop label encoder')
+            _le_season = load_model_asset('le_season.pkl', 'season label encoder')
+            _le_state = load_model_asset('le_state.pkl', 'state label encoder')
+        except Exception as e:
+            print(f'Warning: Could not load yield models: {e}')
+    return _yield_model, _yield_scaler, _le_crop, _le_season, _le_state
 
 @login_required
 def yeild_predict(request):
@@ -1026,6 +1053,7 @@ def yeild_predict(request):
             entered_data = form.cleaned_data
             
             # 1. Encode Categorical variables
+            yield_model, yield_scaler, le_crop, le_season, le_state = get_yield_models()
             try:
                 # Extra safety checks for encoders
                 crop_val = entered_data['crop']
