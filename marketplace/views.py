@@ -1030,9 +1030,15 @@ def get_yield_models():
     global _yield_model, _yield_scaler, _le_crop, _le_season, _le_state
     if _yield_model is None:
         try:
-            # Look for compressed model first to save memory (especially on Render)
-            compressed_path = Path(settings.BASE_DIR) / 'ml_models' / 'yield_model_compressed.pkl'
-            model_file = 'yield_model_compressed.pkl' if compressed_path.exists() else 'yield_model.pkl'
+            # Prioritize the lightweight XGBoost model (400KB) to completely avoid Render OOM crashes
+            # Fallback to the compressed ensemble (189MB) or original (715MB) if lite model is missing
+            model_path = Path(settings.BASE_DIR) / 'ml_models'
+            if (model_path / 'yield_model_lite.pkl').exists():
+                model_file = 'yield_model_lite.pkl'
+            elif (model_path / 'yield_model_compressed.pkl').exists():
+                model_file = 'yield_model_compressed.pkl'
+            else:
+                model_file = 'yield_model.pkl'
             
             _yield_model = load_model_asset(model_file, 'yield model')
             _yield_scaler = load_model_asset('yield_scaler.pkl', 'yield scaler')
