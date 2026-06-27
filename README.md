@@ -1,8 +1,5 @@
 <div align="center">
 
-<img src="https://farm-market-1.onrender.com/static/images/hero_banner.png" alt="FarmDirect Banner" width="100%" style="border-radius:12px;" />
-
-<br/>
 <br/>
 
 # 🌾 FarmDirect — Agro-Tech Marketplace Suite
@@ -28,11 +25,11 @@
 
 - [Overview](#-overview)
 - [Live Demo](#-live-demo)
+- [App Screenshots](#-app-screenshots)
 - [Key Features](#-key-features)
 - [Tech Stack](#-tech-stack)
 - [ML Model — Crop Intelligence](#-ml-model--crop-intelligence-engine)
-- [App Screenshots](#-app-screenshots)
-- [Architecture](#-system-architecture)
+- [System Architecture](#-system-architecture)
 - [Getting Started](#-getting-started-local-setup)
 - [Project Structure](#-project-structure)
 - [Environment Variables](#-environment-variables)
@@ -43,7 +40,7 @@
 
 ## 🌱 Overview
 
-**FarmDirect** is a full-stack Django web application that reimagines agricultural commerce in India. It provides farmers with a direct digital channel to sell their produce to buyers — cutting out costly intermediaries — while equipping them with AI-powered tools to make smarter farming decisions.
+**FarmDirect** is a full-stack Django web application that reimagines agricultural commerce in India. It provides farmers with a direct digital channel to sell their produce to institutional buyers — cutting out costly intermediaries — while equipping them with AI-powered tools to make smarter farming decisions.
 
 > _"45,000+ verified farmers. 1.2M tons traded. Zero middlemen."_
 
@@ -51,8 +48,9 @@
 
 | Pain Point | FarmDirect Solution |
 |---|---|
-| Farmers earn ~30% less due to middlemen | Direct-to-buyer marketplace |
+| Farmers earn ~30% less due to middlemen | Direct-to-buyer marketplace with zero commission |
 | No data-driven crop planning | AI Crop Recommendation Engine (99.5% accuracy) |
+| No harvest volume forecasting | Yield Prediction Suite with state/season/crop inputs |
 | Manual quality verification | Verified listing system with quality badges |
 | No real-time pricing visibility | Live Market Pulse — tracks 500+ regional mandis |
 | Hard to source certified farm inputs | Premium Inputs procurement module |
@@ -63,35 +61,67 @@
 
 🔗 **[https://farm-market-1.onrender.com](https://farm-market-1.onrender.com)**
 
-> Use the following demo credentials to explore the platform:
->
-> **Username:** `demo_user` &nbsp;|&nbsp; **Password:** `Demo@1234`
+> Register a free account to access the full platform — AI Suite, Marketplace, Control Panel, and My Produce dashboard.
+
+---
+
+## 📸 App Screenshots
+
+### 🏠 Homepage — Hero & Market Pulse
+
+> Dark-green hero section with bold typography, live mandi price ticker at the bottom scrolling real-time commodity rates (Rice ₹4,200/q · Cotton ₹6,800/q · Soybean ₹3,900/q · Maize ₹1,950/q).
+
+![Homepage](screenshots/ss_homepage.png)
+
+---
+
+### 🛒 Marketplace Core — Live Listings
+
+> 16 verified produce listings (Fresh Tomatoes ₹25 · Organic Wheat ₹40 · Green Chilli ₹60 · Mango ₹120 · Potatoes ₹20 · Rice Basmati ₹90 · Lady Finger ₹45 · Onions ₹25) with real Cloudinary product images, verified badges, farmer ratings, and Add to Tray buttons.
+
+![Marketplace](screenshots/ss_marketplace.png)
+
+---
+
+### 🤖 AI Suite — Crop Intelligence Engine
+
+> Neural Core Active — input 7 multi-spectral soil metrics (N, P, K, pH, Temperature, Humidity, Rainfall) and hit **Initialize Neural Synthesis** to get a high-precision crop recommendation.
+
+![AI Crop Predictor](screenshots/ss_ai_crop.png)
+
+---
+
+### 📊 Yield Forecast Suite — Orbital Data Sync
+
+> Input State, Crop Type, Season, Crop Year, Area (ha), Annual Rainfall, Fertilizer & Pesticide used → **Generate Yield Projection** to predict production volume from historical climatic and operational data.
+
+![Yield Prediction](screenshots/ss_yield.png)
 
 ---
 
 ## ✨ Key Features
 
 ### 🛒 Marketplace Core
-- **Direct Selling Portal** — Farmers list produce with photos, pricing, and descriptions
-- **Live Listings** — 16+ verified crop listings with pagination and search
-- **Cart (Tray) System** — Add-to-cart, quantity management, and checkout flow
-- **Cloudinary CDN** — Optimized image uploads and delivery for all produce photos
+- **Direct Selling Portal** — Farmers list produce with Cloudinary-hosted photos, pricing, and descriptions
+- **Live Listings** — 16+ verified crop listings with Search Pulse, Filters, and pagination
+- **Cart (Tray) System** — Add-to-tray, quantity management, and full checkout flow
+- **Verified Badges** — Quality-assured listings with 4.8★ avg farmer rating
 
 ### 🤖 AI Intelligence Suite
-- **Crop Recommendation Engine** — Predicts optimal crops based on soil N/P/K, pH, temperature, humidity, and rainfall inputs using a **scikit-learn ensemble model**
-- **Yield Forecast Suite** — Predictive analytics for expected harvest output
-- **Market Pulse Feed** — Real-time commodity prices (Wheat, Rice, Cotton, Soybean, Maize) via a scrolling ticker
+- **Crop Recommendation Engine** — Predicts optimal crops from 7 soil & climate inputs using an ensemble ML model (**99.5% accuracy**)
+- **Yield Forecast Suite** — Projects harvest volume using state, season, crop type, area, rainfall, fertilizer, and pesticide data
+- **Market Pulse Feed** — Live commodity prices scrolling in real-time across the hero banner
 
 ### 👤 User Ecosystem
-- **Dual-role Auth** — Separate farmer and buyer accounts with Django's auth system
-- **Secure Login Terminal** — JWT-style session flow with password reset via email
-- **Farmer Profiles** — Verified badges, ratings (4.8★ avg), and produce history
+- **Authenticated Dashboard** — Post-login nav shows Market, Control Panel, My Produce, AI Suite, Contact + Welcome back greeting
+- **Secure Auth** — Django session-based auth with email password reset
+- **Farmer Profiles** — Verified badges, star ratings, and produce history
 
 ### 📦 Quality Inputs Module
-- Procurement portal for certified seeds, organic fertilizers, and smart equipment
+- Procurement portal for certified seeds, organic fertilizers, and smart farm equipment
 
 ### 📊 Admin Panel
-- Full Django admin dashboard for listing moderation, user management, and order oversight
+- Full Django admin for listing moderation, user management, and order oversight
 
 ---
 
@@ -108,8 +138,8 @@
 | **Frontend** | Django Templates, Tailwind CSS, Vanilla JS |
 | **Authentication** | Django Auth + Session Management |
 | **Deployment** | Render (PaaS) |
-| **Static Assets** | WhiteNoise |
-| **Email** | SMTP (Django Email Backend) |
+| **Static Files** | WhiteNoise |
+| **Email** | Django SMTP Backend |
 
 </div>
 
@@ -117,16 +147,16 @@
 
 ## 🧠 ML Model — Crop Intelligence Engine
 
-The AI core of FarmDirect is a **multi-class crop recommendation classifier** trained on real agricultural data.
+The AI core is a **multi-class crop recommendation classifier** trained on real agricultural data.
 
 ```
-Input Parameters     →   Model   →   Output
-─────────────────────────────────────────────
-N   (Nitrogen)
-P   (Phosphorus)       Ensemble   →  Recommended Crop
-K   (Potassium)        Voting          (e.g., Rice, Wheat,
-pH  (Soil acidity)     Classifier      Cotton, Maize...)
-Temperature (°C)
+Input Parameters         →    Model Pipeline    →    Output
+──────────────────────────────────────────────────────────────
+N   (Nitrogen, %)
+P   (Phosphorus, %)           VotingClassifier     Recommended Crop
+K   (Potassium, %)        →   Random Forest    →   + Confidence Score
+pH  (Soil pH level)           Gradient Boost       (e.g., Rice, Wheat,
+Temperature (°C)              SVM                   Cotton, Maize ...)
 Humidity (%)
 Rainfall (mm)
 ```
@@ -138,85 +168,60 @@ Rainfall (mm)
 | **Accuracy** | **99.5%** |
 | Cross-Validation | 5-Fold Stratified CV |
 | Algorithm | VotingClassifier (RF + GBM + SVM) |
+| Hyperparameter Tuning | GridSearchCV |
 | Dataset | 2,200 samples × 7 features |
-| Classes | 22 crop types |
+| Output Classes | 22 crop types |
 
-> Model uses `GridSearchCV` for hyperparameter tuning and avoids data leakage with proper train/test split pipeline.
+### Yield Prediction Model
 
----
-
-## 📸 App Screenshots
-
-### 🏠 Homepage — Hero & Market Pulse
-> Live mandi commodity prices scroll in real-time across the banner ticker
-
-![Homepage](https://farm-market-1.onrender.com/static/images/hero_banner.png)
-
----
-
-### 🛒 Marketplace — Live Listings
-> 16+ verified produce listings with farmer profiles, ratings, and Cloudinary-hosted images
-
-| Listing Card | Details |
+| Input | Description |
 |---|---|
-| Fresh Tomatoes | ₹25/unit — Verified — ⭐ 4.8 |
-| Organic Wheat | ₹40/unit — Verified — ⭐ 4.8 |
-| Alphonso Mango | ₹120/unit — Verified — ⭐ 4.8 |
-| Rice Basmati | ₹90/unit — Verified — ⭐ 4.8 |
-| Green Chilli | ₹60/unit — Verified — ⭐ 4.8 |
-| Kashmiri Apples | ₹150/unit — Verified — ⭐ 4.8 |
+| State | Indian state (e.g., Andhra Pradesh) |
+| Crop Type | e.g., Arecanut, Rice, Wheat |
+| Season | Kharif / Rabi / Autumn / Whole Year |
+| Area (ha) | Farm area in hectares |
+| Annual Rainfall (mm) | Regional rainfall data |
+| Fertilizer Used (kg) | Total fertilizer input |
+| Pesticide Used (kg) | Total pesticide input |
 
-> 🔗 [Browse Live Marketplace →](https://farm-market-1.onrender.com/direct-selling/)
-
----
-
-### 🔐 Auth — Login Terminal
-> Cyberpunk-styled secure auth flow with encryption badge and real-time farmer count
-
-> 🔗 [View Login Page →](https://farm-market-1.onrender.com/login/)
-
----
-
-### 🤖 AI Predictor Suite
-> Input 7 soil & climate parameters, get instant crop recommendation with confidence score
-
-> 🔗 [Try AI Suite →](https://farm-market-1.onrender.com/ai-suite/) _(requires login)_
+> Both models use proper train/test splits before fitting — no data leakage. `GridSearchCV` used for hyperparameter optimization.
 
 ---
 
 ## 🏗 System Architecture
 
 ```
-┌──────────────────────────────────────────────────────────┐
-│                    Client (Browser)                       │
-│            Django Templates + Tailwind CSS                │
-└─────────────────────┬────────────────────────────────────┘
-                      │ HTTP
-┌─────────────────────▼────────────────────────────────────┐
-│                  Django Backend                           │
-│  ┌─────────────┐  ┌──────────────┐  ┌─────────────────┐ │
-│  │  Auth Views │  │ Marketplace  │  │   AI Suite       │ │
-│  │  /login     │  │ /direct-sell │  │  /predict-crop   │ │
-│  │  /register  │  │ /cart        │  │  /yeild-predict  │ │
-│  └─────────────┘  └──────────────┘  └────────┬────────┘ │
-│                                               │          │
-│  ┌────────────────────────────────────────────▼────────┐ │
-│  │              scikit-learn ML Pipeline               │ │
-│  │     VotingClassifier (RF + GBM + SVM)               │ │
-│  └─────────────────────────────────────────────────────┘ │
-│                                                          │
-│  ┌──────────────────────┐   ┌──────────────────────────┐ │
-│  │   PostgreSQL DB       │   │   Cloudinary CDN         │ │
-│  │   (Users, Products,  │   │   (Product Images,       │ │
-│  │    Orders, Listings) │   │    Auth Banners)         │ │
-│  └──────────────────────┘   └──────────────────────────┘ │
-└──────────────────────────────────────────────────────────┘
-                      │
-            ┌─────────▼─────────┐
-            │   Render (PaaS)   │
-            │  + WhiteNoise     │
-            │  + SMTP Email     │
-            └───────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│                     Client (Browser)                         │
+│              Django Templates + Tailwind CSS                 │
+└──────────────────────────┬───────────────────────────────────┘
+                           │ HTTP
+┌──────────────────────────▼───────────────────────────────────┐
+│                     Django Backend                           │
+│                                                              │
+│  ┌──────────────┐  ┌───────────────┐  ┌──────────────────┐  │
+│  │  Auth Views  │  │  Marketplace  │  │    AI Suite      │  │
+│  │  /login      │  │  /direct-sell │  │  /predict-crop   │  │
+│  │  /register   │  │  /cart        │  │  /yeild-predict  │  │
+│  └──────────────┘  └───────────────┘  └────────┬─────────┘  │
+│                                                │             │
+│        ┌──────────────────────────────────────▼──────────┐   │
+│        │           scikit-learn ML Pipeline              │   │
+│        │   Crop: VotingClassifier (RF + GBM + SVM)       │   │
+│        │   Yield: Regression model (State/Season/Area)   │   │
+│        └──────────────────────────────────────────────────┘  │
+│                                                              │
+│  ┌──────────────────────┐     ┌────────────────────────────┐ │
+│  │    PostgreSQL DB     │     │      Cloudinary CDN        │ │
+│  │  Users, Products,   │     │   Product Images,          │ │
+│  │  Orders, Listings   │     │   Auth Banners             │ │
+│  └──────────────────────┘     └────────────────────────────┘ │
+└──────────────────────────────────────────────────────────────┘
+                           │
+               ┌───────────▼──────────┐
+               │    Render (PaaS)     │
+               │  WhiteNoise + SMTP   │
+               └──────────────────────┘
 ```
 
 ---
@@ -227,8 +232,8 @@ Rainfall (mm)
 
 - Python 3.11+
 - pip / virtualenv
-- PostgreSQL (or use SQLite for dev)
-- Cloudinary account
+- PostgreSQL (or SQLite for dev)
+- Cloudinary account (free tier works)
 
 ### 1. Clone the Repository
 
@@ -253,7 +258,7 @@ pip install -r requirements.txt
 
 ### 4. Set Environment Variables
 
-Create a `.env` file in the root directory (see [Environment Variables](#-environment-variables) section below).
+Create a `.env` file in the root directory (see [Environment Variables](#-environment-variables) below).
 
 ### 5. Apply Migrations
 
@@ -274,7 +279,7 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
-Visit: [http://localhost:8000](http://localhost:8000)
+Visit **[http://localhost:8000](http://localhost:8000)**
 
 ---
 
@@ -283,27 +288,36 @@ Visit: [http://localhost:8000](http://localhost:8000)
 ```
 Farm_Market/
 │
-├── core/                    # Main Django app
-│   ├── models.py            # Product, Order, Cart, UserProfile
-│   ├── views.py             # Marketplace, Cart, Auth views
-│   ├── urls.py              # URL routing
-│   └── ml_model/            # scikit-learn crop prediction pipeline
-│       ├── model.pkl        # Serialized trained model
-│       └── predict.py       # Prediction logic
+├── core/                        # Main Django app
+│   ├── models.py                # Product, Order, Cart, UserProfile
+│   ├── views.py                 # Marketplace, Cart, Auth, AI views
+│   ├── urls.py                  # URL routing
+│   └── ml/
+│       ├── crop_model.pkl       # Serialized VotingClassifier (crop recommendation)
+│       ├── yield_model.pkl      # Serialized yield regression model
+│       └── predict.py           # Prediction logic
 │
-├── templates/               # Django HTML templates
+├── templates/                   # Django HTML templates
 │   ├── base.html
 │   ├── home.html
 │   ├── marketplace.html
 │   ├── ai_suite.html
+│   ├── predict_crop.html
+│   ├── yield_predict.html
 │   └── auth/
 │       ├── login.html
 │       └── register.html
 │
 ├── static/
-│   ├── css/                 # Tailwind + custom styles
-│   ├── js/                  # Market pulse ticker, cart JS
-│   └── images/              # Hero banner, auth banner
+│   ├── css/                     # Tailwind + custom styles
+│   ├── js/                      # Market pulse ticker, cart interactions
+│   └── images/                  # Hero & auth banners
+│
+├── screenshots/                 # ← Commit the 4 PNG screenshots here
+│   ├── ss_homepage.png
+│   ├── ss_marketplace.png
+│   ├── ss_ai_crop.png
+│   └── ss_yield.png
 │
 ├── requirements.txt
 ├── manage.py
@@ -314,11 +328,11 @@ Farm_Market/
 
 ## 🔐 Environment Variables
 
-Create a `.env` file with the following keys:
+Create a `.env` file in the root with these keys:
 
 ```env
 # Django
-SECRET_KEY=your_django_secret_key
+SECRET_KEY=your_django_secret_key_here
 DEBUG=False
 ALLOWED_HOSTS=your-domain.onrender.com,localhost
 
@@ -335,6 +349,7 @@ EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=587
 EMAIL_HOST_USER=your_email@gmail.com
 EMAIL_HOST_PASSWORD=your_app_password
+DEFAULT_FROM_EMAIL=noreply@farmdirect.tech
 ```
 
 ---
@@ -342,19 +357,20 @@ EMAIL_HOST_PASSWORD=your_app_password
 ## 🗺 Roadmap
 
 - [x] Direct marketplace with verified farmer listings
-- [x] Cart system with add/remove functionality
+- [x] Cart (Tray) system with add/remove functionality
 - [x] AI crop recommendation engine (99.5% accuracy)
-- [x] Yield prediction suite
-- [x] Market price ticker (500+ mandis)
+- [x] Yield prediction suite (state/season/crop/area inputs)
+- [x] Live Market Pulse ticker (500+ mandis)
 - [x] Cloudinary image CDN integration
-- [x] Secure auth with password reset
-- [x] Deployed on Render
-- [ ] Payment gateway integration (Razorpay)
+- [x] Secure auth with email password reset
+- [x] Post-login dashboard (Control Panel, My Produce)
+- [x] Deployed on Render with PostgreSQL
+- [ ] Razorpay payment gateway integration
 - [ ] Real-time mandi price API (live data feed)
-- [ ] Mobile app (React Native)
 - [ ] Farmer analytics dashboard
+- [ ] React Native mobile app
 - [ ] Multi-language support (Hindi, Marathi, Tamil)
-- [ ] Logistics tracking integration
+- [ ] Logistics & delivery tracking
 
 ---
 
@@ -369,9 +385,11 @@ EMAIL_HOST_PASSWORD=your_app_password
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0077B5?style=for-the-badge&logo=linkedin)](https://linkedin.com/in/rakesh-kumar-mishra)
 [![Email](https://img.shields.io/badge/Email-mishrarakeshkumar766%40gmail.com-EA4335?style=for-the-badge&logo=gmail&logoColor=white)](mailto:mishrarakeshkumar766@gmail.com)
 
-*B.Tech CSE @ VIT Bhopal University (2023–2027) | AWS SAA-C03 Certified | OCI Developer Certified*
+*B.Tech CSE @ VIT Bhopal University (2023–2027) | CGPA: 8.2*
 
-*🏆 Finalist — Solvit 2025 | ET AI Concierge | Canara Suraksha (Top 100 of 4,000+ teams)*
+*🏅 AWS Solutions Architect Associate (SAA-C03) | Oracle Cloud Infrastructure 2025 Certified Developer*
+
+*🏆 Hackathon Finalist — Solvit 2025 | ET AI Concierge | Canara Suraksha (Top 100 / 4,000+ teams)*
 
 </div>
 
@@ -379,8 +397,8 @@ EMAIL_HOST_PASSWORD=your_app_password
 
 <div align="center">
 
-**⭐ Star this repo if you found it useful — it helps more people discover FarmDirect!**
+**⭐ If this project helped you or impressed you — drop a star! It means a lot.**
 
 *Built with 💚 to empower India's farming community through technology*
 
-</div> 
+</div>
