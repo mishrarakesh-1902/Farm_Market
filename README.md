@@ -71,7 +71,8 @@
 
 > Dark-green hero section with bold typography, live mandi price ticker at the bottom scrolling real-time commodity rates (Rice ₹4,200/q · Cotton ₹6,800/q · Soybean ₹3,900/q · Maize ₹1,950/q).
 
-![Homepage](screenshots/ss_homepage.png)
+<img width="1568" height="715" alt="image" src="https://github.com/user-attachments/assets/378316ce-4901-4383-b3a4-abed1e44f0b2" />
+
 
 ---
 
