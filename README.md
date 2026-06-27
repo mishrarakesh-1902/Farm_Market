@@ -80,7 +80,8 @@
 
 > 16 verified produce listings (Fresh Tomatoes ₹25 · Organic Wheat ₹40 · Green Chilli ₹60 · Mango ₹120 · Potatoes ₹20 · Rice Basmati ₹90 · Lady Finger ₹45 · Onions ₹25) with real Cloudinary product images, verified badges, farmer ratings, and Add to Tray buttons.
 
-![Marketplace](screenshots/ss_marketplace.png)
+<img width="1516" height="784" alt="image" src="https://github.com/user-attachments/assets/f16a5f69-c615-459a-96d7-d0cff99bede1" />
+
 
 ---
 
@@ -88,7 +89,8 @@
 
 > Neural Core Active — input 7 multi-spectral soil metrics (N, P, K, pH, Temperature, Humidity, Rainfall) and hit **Initialize Neural Synthesis** to get a high-precision crop recommendation.
 
-![AI Crop Predictor](screenshots/ss_ai_crop.png)
+<img width="1568" height="761" alt="image" src="https://github.com/user-attachments/assets/12a81cb2-3c1e-48b4-bf90-318004e666dc" />
+
 
 ---
 
@@ -96,7 +98,8 @@
 
 > Input State, Crop Type, Season, Crop Year, Area (ha), Annual Rainfall, Fertilizer & Pesticide used → **Generate Yield Projection** to predict production volume from historical climatic and operational data.
 
-![Yield Prediction](screenshots/ss_yield.png)
+<img width="1523" height="784" alt="image" src="https://github.com/user-attachments/assets/952412ed-68e5-4db5-a7d2-200ff2b5b08a" />
+
 
 ---
 
